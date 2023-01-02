@@ -1,0 +1,12 @@
+% BER 분석하기.
+
+function correct, error = BER_analysis(input, estimation)
+    correct , error = 0;
+    for i = 1:length(estimation)
+        if input(i) == estimation 
+            correct++;
+        else
+            error++;
+        end
+    end
+end

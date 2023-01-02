@@ -1,0 +1,25 @@
+clc
+clear
+close
+
+p = [1 0 0 1]
+
+code = Hamming_Enc(p')
+modulated_signal = Two_PAM_mod(code, 20)
+sigma_v = 2
+
+received_signal = AWGN_channel(modulated_signal, sigma_v)
+
+demodulated_signal = Two_PAM_dem(received_signal, sigma_v, Eb)
+
+estimation = Hamming_DEC(demodulated_signal)
+
+
+
+%% drawing graph
+SNR = 0:0.01:20;
+figure(1),semilogy( SNR, (qfunc ( sqrt(10.^((SNR)/10)/2) )), 'r--' );  
+xlabel('Eb/No [dB]'), ylabel('BER')
+grid,axis([0 20 0.000001 1]), legend('Simulated result','Theoretical 2PAM result')
+
+

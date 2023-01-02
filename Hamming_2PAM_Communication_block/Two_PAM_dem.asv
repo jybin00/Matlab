@@ -1,0 +1,16 @@
+% 2-PAM demodulator LLR(Log Likelihood Ratio)
+
+function demoulated_output = LLR(received_signal, sigma)
+
+    for i = 1:lengh(received_signal)
+        l_+1 = (1/(sigma*sqrt(2*pi))*exp(-((received_signal(i)-1)^2)/(2*sigma^2)); 
+        l_-1 =  (1/(sigma*sqrt(2*pi))*exp(-((received_signal(i)+1)^2)/(2*sigma^2)); 
+    
+        if ln(l_+1/l_-1) > 0
+            demoulated_output = 1;
+        else
+            demoulated_output = -1;
+        end
+    end
+    
+end
