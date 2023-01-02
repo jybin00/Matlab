@@ -1,0 +1,8 @@
+clc
+clear
+close
+
+input = [1 0 0 1];
+
+parity = Convolution_code(input);
+modulated_signal = 4QAM
