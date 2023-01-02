@@ -3,7 +3,7 @@ clear      % variable clear
 close     % figure close
 syms y  % calculation variable
 
-N_frames = 5000000;                                 % number of symbols
+N_frames = 50000;                                 % number of symbols
 E_bit_db = 25;                                          % bit energy [dB]
 correct = zeros(E_bit_db, 2);                     % correct bit array
 error = zeros(E_bit_db, 2);                        % error bit array
