@@ -50,7 +50,7 @@ hold on
 
 xline(-1.6, '-.m')
 hold on
-    
+
 scatter(Eb_of_No_dB, BER, 20, "green", "filled", "o");
 hold on
 
