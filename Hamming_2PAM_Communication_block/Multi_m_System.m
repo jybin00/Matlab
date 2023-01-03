@@ -3,14 +3,14 @@ clear
 close
 syms y
 
-N_frames = 100000;  % number of symbols
+N_frames = 1000000;  % number of symbols
 correct = zeros(2, 1);
 error = zeros(2, 1);
 c_or_e = zeros(2, 1);
 c_or_e2 = zeros(2, 1);
 generated_sequnece = randsrc(4*N_frames, 1, [0 1]);
 
-E_b = 10;
+E_b = 20;
 sigma_v = 2;             % noise variance 
 
 for i = 1 : N_frames
@@ -44,13 +44,16 @@ Eb_No = -2:0.01:14;
 figure(1),semilogy( Eb_No, (qfunc ( sqrt(2*10.^((Eb_No)/10)) )), 'r--' );  % uncoded 2PAM graph
 xlabel('Eb/No [dB]'), ylabel('BER')
 hold on
-scatter(solve(Shannon_Cap(y, sigma_v) == 4/7, y), [10^(-7) 1])
+
+semilogy( Eb_No, 1- (1-qfunc ( sqrt(2*10.^(Eb_No/10)))).^4, 'b--' );      % uncoded 2PAM FER graph
+xlabel('Eb/No [dB]'), ylabel('BER, FER');
 hold on
+
 scatter(Eb_of_No_dB, FER, 20, 'magenta', "X");
 hold on
 scatter(Eb_of_No_dB, BER, 20, 'green', 'filled');
 grid,axis([-2 14 10^(-7) 1]);
-legend('Uncoded 2PAM result', 'Shannon limits','Simulation BER', 'Simulation FER');
+legend('Uncoded BER result', 'Uncoded FER result', 'Simulation BER', 'Simulation FER');
 
 
 
