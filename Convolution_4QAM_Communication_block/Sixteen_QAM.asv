@@ -2,16 +2,16 @@
 
 function modulated_signal = Sixteen_QAM(coded_signal, Ebav)
     switch_int = 0;
-    for i = 1 : 4
+    for i = [3 2 1 0]
         coded_signal(i)
-        switch_int = switch_int + 2^(4-i)*coded_signal(i)
+        switch_int = switch_int + 2^(i-1)*coded_signal(i)
     switch switch_int
         case 0
             modulated_signal = [sqrt(Ebav/5) sqrt(Ebav/5)];
         case 1
             modulated_signal = [sqrt(Ebav/5) 2*sqrt(Ebav/5)];
         case 2
-            modulated_signal = [2*sqrt(Ebav/5) sqrt(Ebav/5)];
+            modulated_signal = [2*sqrt(Ebav/5) 2*sqrt(Ebav/5)];
         case 3
             modulated_signal = [2*sqrt(Ebav/5) 2*sqrt(Ebav/5)];
         case 4
