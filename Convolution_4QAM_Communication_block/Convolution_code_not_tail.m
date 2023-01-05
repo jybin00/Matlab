@@ -11,5 +11,4 @@ function coded_signal = Convolution_code_not_tail(input, m)     % input sequence
         end
         m(1) = input(i);                                                                                    % input m1으로 이동
     end
-    disp(m')
 end
