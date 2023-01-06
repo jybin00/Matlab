@@ -3,7 +3,7 @@ clear
 close
 syms y
 
-N_frames = 1000000;  % number of symbols
+N_frames = 100000;  % number of symbols
 correct = zeros(2, 1);
 error = zeros(2, 1);
 c_or_e = zeros(2, 1);
@@ -22,9 +22,11 @@ for i = 1 : N_frames
 
     received_signal = AWGN_channel(modulated_signal, sigma_v);
     
-    demodulated_signal = Two_PAM_dem(received_signal, sigma_v, E_b);
-    
-    estimation = Hamming_DEC(demodulated_signal);
+%     demodulated_signal = Two_PAM_dem(received_signal, sigma_v, E_b);
+%     
+%     estimation = Hamming_DEC(demodulated_signal);
+
+    estimation = Soft_decision_DEC(received_signal', E_b);
 
     c_or_e = BER_analysis(input, estimation);
     correct(1) = correct(1) + c_or_e(1);
@@ -34,9 +36,9 @@ for i = 1 : N_frames
     correct(2) = correct(2) + c_or_e2(1);
     error(2)   = error(2)    + c_or_e2(2);
 end
-BER = error(1)/(correct(1) + error(1))
-FER = error(2)/(correct(2) + error(2))
-Eb_of_No_dB = 10*log10(E_b/(2*(sigma_v^2)))
+BER = error(1)/(correct(1) + error(1));
+FER = error(2)/(correct(2) + error(2));
+Eb_of_No_dB = 10*log10(E_b/(2*(sigma_v^2)));
 
 
 %% drawing graph

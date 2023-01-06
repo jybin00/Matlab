@@ -3,8 +3,8 @@ clear      % variable clear
 close     % figure close
 syms y  % calculation variable
 
-N_frames = 5000000;                              % number of symbols
-E_bit_db = 16;                                          % bit energy [dB]
+N_frames = 50000;                                 % number of symbols
+E_bit_db = 18;                                          % bit energy [dB]
 correct = zeros(E_bit_db, 2);                     % correct bit array
 error = zeros(E_bit_db, 2);                        % error bit array
 BER = zeros(E_bit_db, 1);                          % bit error rate array
@@ -55,11 +55,10 @@ xline(-1.6, '-.m')
 hold on
 
 %scatter(Eb_of_No_dB, BER, 20, "green", "filled", "o");
-plot(Eb_of_No_dB, BER, '-go');
+plot(Eb_of_No_dB, BER, '-o');
 hold on
 
 %scatter(Eb_of_No_dB, FER, 20, "red", "filled", "o");
-plot(Eb_of_No_dB, FER, '-ro')
 grid,axis([-2.2 14 10^(-7) 1]), legend('Uncoded 2PAM BER', 'Uncoded 2PAM FER', 'Shannon limit', ...
     'Simulation BER', 'Simulated FER');
 

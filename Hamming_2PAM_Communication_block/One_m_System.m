@@ -10,9 +10,11 @@ sigma_v = 2
 
 received_signal = AWGN_channel(modulated_signal, sigma_v)
 
-demodulated_signal = Two_PAM_dem(received_signal, sigma_v, 20)
+%demodulated_signal = Two_PAM_dem(received_signal, sigma_v, 20)
 
-estimation = Hamming_DEC(demodulated_signal) % estiamtion result
+%estimation = Hamming_DEC(demodulated_signal) % estiamtion result
+
+estimation = Soft_decision_DEC(received_signal', 16)
 p
 
 
