@@ -87,19 +87,19 @@ function decoded_output = Viterbi_decoding_opt(demodulated_output, num_message_b
     end
 %----------------------------------------------------------------------------------
 % back tracing
-    back_path = [0 0 0 0 0 0];
-    Message_bit = Message_bit(:,2:103);
+    back_path = 0;                                          % 맨 마지막 state = [0 0 0 0 0 0]
+    Message_bit = Message_bit(:,2:103);         % Message matrix 한 칸 당기기.
     for t = 1:102
-        prev_back_path1 = bin_deci([back_path(2:6), 1]);
-        prev_back_path0 = bin_deci([back_path(2:6), 0]);
-        [m(103-t), I] = min([Path_metric(prev_back_path0+1, 103-t), Path_metric(prev_back_path1+1, 103-t )]);
+        prev_back_path0 = mod(2*back_path, 64)+1;  
+        prev_back_path1 = mod(2*back_path + 1, 64) +1;
+        [~, I] = min([Path_metric(prev_back_path0, 103-t), Path_metric(prev_back_path1, 103-t )]);
         if I == 1
-            decoded_output(1,103-t) = Message_bit(polyval(back_path,2)+1, 103-t);
-            back_path = [back_path(2:6), 0];
+            decoded_output(1,103-t) = Message_bit(back_path+1, 103-t);
+            back_path = mod(2*back_path, 64);
             % disp(prev_back_path0+1)
         else
-            decoded_output(1,103-t) = Message_bit(polyval(back_path,2)+1, 103-t);
-            back_path = [back_path(2:6), 1];
+            decoded_output(1,103-t) = Message_bit(back_path+1, 103-t);
+            back_path = mod(2*back_path + 1, 64);
             % disp(prev_back_path1+1)
         end
     end
