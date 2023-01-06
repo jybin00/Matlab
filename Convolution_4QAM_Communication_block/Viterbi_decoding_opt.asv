@@ -64,7 +64,7 @@ function decoded_output = Viterbi_decoding_opt(demodulated_output, num_message_b
                     Path_metric(j, t) = min(Path_metric(Prev_Path_zero, t-1) + BM_zero, ...
                         Path_metric(Prev_Path_one, t-1) + BM_one);
                     Message_bit(j,t) = 0;
-                else                                                                             % 입력 1을 받아서 현재 값이 되었는가?
+                else         % 입력 1을 받아서 현재 값이 되었는가?
                     BM_zero = nnz( mod(output_one(Prev_Path_zero, :) - codeword, 2));
                     BM_one  = nnz( mod(output_one(Prev_Path_one, :) - codeword, 2));
                     Path_metric(j, t) = min(Path_metric(Prev_Path_one, t-1) + BM_one, ...
@@ -75,8 +75,8 @@ function decoded_output = Viterbi_decoding_opt(demodulated_output, num_message_b
         else
             codeword = demodulated_output(1, 1+2*(t-2): 2*(t-1));    % input을 두개씩 끊어서 codeword 구성
             for j = 1 : 64
-                Current_path = j-1;                                                        % ex) current_path   = [0 0 1 1 0 0]
-                Prev_Path_zero = mod(2*Current_path, 64)+1;               % prev_path_from 0 = [0 1 1 0 0 0] 끝자리 0
+                Current_path = j-1;                                                         % ex) current_path   = [0 0 1 1 0 0]
+                Prev_Path_zero = mod(2*Current_path, 64)+1;                % prev_path_from 0 = [0 1 1 0 0 0] 끝자리 0
                 Prev_Path_one  = mod(2*Current_path + 1, 64) +1;        % prev_path_from 1 = [0 1 1 0 0 1] 끝자리 1
 
                 % BM = min{ 끝자리 0에서 온 PM + BM, 끝자리 1에서 온 PM + BM}
@@ -86,7 +86,7 @@ function decoded_output = Viterbi_decoding_opt(demodulated_output, num_message_b
                     Path_metric(j, t) = min(Path_metric(Prev_Path_zero, t-1) + BM_zero, ...
                         Path_metric(Prev_Path_one, t-1) + BM_one);
                     Message_bit(j,t) = 0;
-                else                                                                                % 입력 1을 받아서 현재 값이 되었는가?
+                else                                                                                 % 입력 1을 받아서 현재 값이 되었는가?
                     BM_zero = nnz( mod(output_one(Prev_Path_zero, :) - codeword, 2));
                     BM_one  = nnz( mod(output_one(Prev_Path_one, :) - codeword, 2));
                     Path_metric(j, t) = min(Path_metric(Prev_Path_zero, t-1) + BM_zero, ...
