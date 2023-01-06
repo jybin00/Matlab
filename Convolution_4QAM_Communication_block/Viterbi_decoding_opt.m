@@ -4,13 +4,24 @@ function decoded_output = Viterbi_decoding_opt(demodulated_output, num_message_b
     decoded_output = zeros(1, 102);  % 96bits + 6bit(tail bits)
 %---------------------------------------------------------------------------------
     % branch metric 계산을 위해서 각 state가 0과 1이 입력으로 들어왔을 때 어떤 출력을 하는지 미리 계산
-    binVal = de2bi(0:63, 6, 'left-msb');  
-    output_zero = zeros(64,2);
-    output_one = zeros(64,2);
-    for t = 1:64
-        output_zero(t,:) = Convolution_code_not_tail(0, binVal(t,1:6));
-        output_one(t,:) = Convolution_code_not_tail(1, binVal(t,1:6));
-    end
+    output_zero =     [0 0;  1 1;  0 1;  1 0;  0 0;  1 1;  0 1;  1 0;
+                                1 1;  0 0;  1 0;  0 1;  1 1;  0 0;  1 0;  0 1; 
+                                1 1;	0 0;  1 0;  0 1;  1 1;	0 0;	1 0;	0 1;
+                            	0 0;	1 1;	0 1;	1 0;  0 0;	1 1;	0 1;	1 0;
+                                1 0;  0 1;  1 1;	0 0;  1 0;  0 1;  1 1;	0 0;
+                            	0 1;	1 0;	0 0;	1 1;	0 1;	1 0;	0 0;	1 1;	
+                                0 1;  1 0;	0 0;	1 1;	0 1;  1 0;  0 0;  1 1;
+                            	1 0;  0 1;  1 1;  0 0;	1 0;	0 1;	1 1;	0 0];
+  
+    output_one = [ 1 1;  0 0;	1 0;	0 1;	1 1;	0 0;	1 0;	0 1;	
+                            0 0;  1 1;	0 1;	1 0;	0 0;	1 1;	0 1;	1 0;
+    	                    0 0;  1 1;	0 1;	1 0;	0 0;	1 1;	0 1;	1 0;
+                        	1 1;  0 0;	1 0;	0 1;	1 1;	0 0;	1 0;	0 1;	
+                        	0 1;  1 0;	0 0;	1 1;	0 1;	1 0;	0 0;	1 1;
+                        	1 0;  0 1;	1 1;	0 0;	1 0;	0 1;	1 1;	0 0;
+                        	1 0;  0 1;	1 1;	0 0;	1 0;	0 1;	1 1;	0 0;
+                        	0 1;  1 0;	0 0;	1 1;	0 1;	1 0;	0 0;	1 1;];
+                        	
 %--------------------------------------------------------------------------------------
     Path_metric = inf(64, num_message_bit+7);              % 64 X 103 Path metric 저장 위한 matrix
     Message_bit = inf(64, num_message_bit + 7);           % path message array

@@ -3,7 +3,7 @@ clear      % variable clear
 close     % figure close
 
 
-N_frame = 5000;                                   % frame 수
+N_frame = 10000;                                   % frame 수
 input = randsrc(1, 96*N_frame, [0 1]);       % input의 개수
 
 encoded_input = Convolution_code_tail_bit(input, 96);
