@@ -15,7 +15,7 @@ for i = 1:length(Channel_output)/2
     demodulated_output(1, 1+4*(i-1):4*i) = ML_demodulation(Channel_output(1,1+2*(i-1):2*i), 100);
 end
 for i = 1:length(demodulated_output)/212
-    decoding(1, 1+96*(i-1):96*i) = Viterbi_decoding(demodulated_output(1, 1+212*(i-1):212*i), 96);
+    decoding(1, 1+96*(i-1):96*i) = Viterbi_decoding_opt(demodulated_output(1, 1+212*(i-1):212*i), 96);
 end
 
 %nnz(input-decoding)

@@ -1,6 +1,6 @@
 % Viterbi decoding
 % 여기서는 예제로 96bit(=12B)의 메시지를 보낸다고 가정.
-function decoded_output = Viterbi_decoding(demodulated_output, num_message_bit)  
+function decoded_output = Viterbi_decoding_opt(demodulated_output, num_message_bit)  
     decoded_output = zeros(1, 102);  % 96bits + 6bit(tail bits)
 %---------------------------------------------------------------------------------
     % branch metric 계산을 위해서 각 state가 0과 1이 입력으로 들어왔을 때 어떤 출력을 하는지 미리 계산
@@ -21,8 +21,8 @@ function decoded_output = Viterbi_decoding(demodulated_output, num_message_bit)
             codeword = demodulated_output(1, 1+2*(t-2): 2*(t-1));    % input을 두개씩 끊어서 codeword 구성
             for j = 1 : 2^(t-1)
                 Current_path = binVal(1+(64/2^(t-1))*(j-1), : );          % ex) current_path   = [0 0 1 1 0 0]
-                Prev_Path_zero = polyval([Current_path(2:6), 0], 2)+1;  % prev_path_from 0 = [0 1 1 0 0 0] 끝자리 0
-                Prev_Path_one  = polyval([Current_path(2:6), 1], 2)+1;  % prev_path_from 1 = [0 1 1 0 0 1] 끝자리 1
+                Prev_Path_zero = bin_deci([Current_path(2:6), 0])+1;  % prev_path_from 0 = [0 1 1 0 0 0] 끝자리 0
+                Prev_Path_one  = bin_deci([Current_path(2:6), 1])+1;  % prev_path_from 1 = [0 1 1 0 0 1] 끝자리 1
 
                 % BM = min{ 끝자리 0에서 온 PM + BM, 끝자리 1에서 온 PM + BM}
                 if Current_path(1) == 0  % 입력 0을 받아서 현재 값이 되었는가?
@@ -43,8 +43,8 @@ function decoded_output = Viterbi_decoding(demodulated_output, num_message_bit)
             codeword = demodulated_output(1, 1+2*(t-2): 2*(t-1));    % input을 두개씩 끊어서 codeword 구성
             for j = 1 : 2^(103-t)
                 Current_path = binVal(j, : );                                           % ex) current_path   = [0 0 1 1 0 0]
-                Prev_Path_zero = polyval([Current_path(2:6), 0], 2)+1;  % prev_path_from 0 = [0 1 1 0 0 0] 끝자리 0
-                Prev_Path_one  = polyval([Current_path(2:6), 1], 2)+1;  % prev_path_from 1 = [0 1 1 0 0 1] 끝자리 1
+                Prev_Path_zero = mod(2*Current_path, 64)+1;    % prev_path_from 0 = [0 1 1 0 0 0] 끝자리 0
+                Prev_Path_one  = bin_deci([Current_path(2:6), 1])+1;  % prev_path_from 1 = [0 1 1 0 0 1] 끝자리 1
 
                 % BM = min{ 끝자리 0에서 온 PM + BM, 끝자리 1에서 온 PM + BM}
                 if Current_path(1) == 0  % 입력 0을 받아서 현재 값이 되었는가?
@@ -64,12 +64,12 @@ function decoded_output = Viterbi_decoding(demodulated_output, num_message_bit)
         else
             codeword = demodulated_output(1, 1+2*(t-2): 2*(t-1));    % input을 두개씩 끊어서 codeword 구성
             for j = 1 : 64
-                Current_path = binVal(j,:);                                             % ex) current_path   = [0 0 1 1 0 0]
-                Prev_Path_zero = polyval([Current_path(2:6), 0], 2)+1;  % prev_path_from 0 = [0 1 1 0 0 0] 끝자리 0
-                Prev_Path_one  = polyval([Current_path(2:6), 1], 2)+1;  % prev_path_from 1 = [0 1 1 0 0 1] 끝자리 1
+                Current_path = j-1;                                                         % ex) current_path   = [0 0 1 1 0 0]
+                Prev_Path_zero = mod(2*Current_path, 64)+1;               % prev_path_from 0 = [0 1 1 0 0 0] 끝자리 0
+                Prev_Path_one  = mod(2*Current_path + 1, 64) +1;        % prev_path_from 1 = [0 1 1 0 0 1] 끝자리 1
 
                 % BM = min{ 끝자리 0에서 온 PM + BM, 끝자리 1에서 온 PM + BM}
-                if Current_path(1) == 0  % 입력 0을 받아서 현재 값이 되었는가?
+                if Current_path < 32   % 입력 0을 받아서 현재 값이 되었는가?
                     BM_zero = nnz( mod(output_zero(Prev_Path_zero, :) - codeword, 2));
                     BM_one  = nnz( mod(output_zero(Prev_Path_one, :) - codeword, 2));
                     Path_metric(j, t) = min(Path_metric(Prev_Path_zero, t-1) + BM_zero, ...
@@ -88,22 +88,21 @@ function decoded_output = Viterbi_decoding(demodulated_output, num_message_bit)
 %----------------------------------------------------------------------------------
 % back tracing
     back_path = [0 0 0 0 0 0];
-    Message_bit = Message_bit()
+    Message_bit = Message_bit(:,2:103);
     for t = 1:102
-        prev_back_path1 = polyval([back_path(2:6), 1], 2);
-        prev_back_path0 = polyval([back_path(2:6), 0], 2);
+        prev_back_path1 = bin_deci([back_path(2:6), 1]);
+        prev_back_path0 = bin_deci([back_path(2:6), 0]);
         [m(103-t), I] = min([Path_metric(prev_back_path0+1, 103-t), Path_metric(prev_back_path1+1, 103-t )]);
         if I == 1
-            decoded_output(1,103-t) = Message_bit(prev_back_path0+1, 103-t);
+            decoded_output(1,103-t) = Message_bit(polyval(back_path,2)+1, 103-t);
             back_path = [back_path(2:6), 0];
-            disp(prev_back_path0+1)
+            % disp(prev_back_path0+1)
         else
-            decoded_output(1,103-t) = Message_bit(prev_back_path1+1, 103-t);
+            decoded_output(1,103-t) = Message_bit(polyval(back_path,2)+1, 103-t);
             back_path = [back_path(2:6), 1];
-            disp(prev_back_path1+1)
+            % disp(prev_back_path1+1)
         end
     end
     decoded_output = decoded_output(1:96);
-    m
 end
 
