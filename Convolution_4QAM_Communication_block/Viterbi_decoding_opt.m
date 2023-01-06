@@ -50,9 +50,9 @@ function decoded_output = Viterbi_decoding_opt(demodulated_output, num_message_b
                     Message_bit((1+(64/2^(t-1))*(j-1)), t) = 1;
                 end
             end
-        elseif t > 97                                                                           % 마지막 t = 98~103는 state가 접히는 시간
-            codeword = demodulated_output(1, 1+2*(t-2): 2*(t-1));    % input을 두개씩 끊어서 codeword 구성
-            for j = 1 : 2^(103-t)
+        elseif t > 97																			% 마지막 t = 98~103는 state가 접히는 시간
+            codeword = demodulated_output(1, 1+2*(t-2): 2*(t-1));   % input을 두개씩 끊어서 codeword 구성
+            for j = 1 : 2^(103-t)			
                 Current_path = j-1;                                                       % ex) current_path   = [0 0 1 1 0 0]
                 Prev_Path_zero = mod(2*Current_path, 64)+1;             % prev_path_from 0 = [0 1 1 0 0 0] 끝자리 0
                 Prev_Path_one  = mod(2*Current_path + 1, 64) +1;     % prev_path_from 1 = [0 1 1 0 0 1] 끝자리 1
