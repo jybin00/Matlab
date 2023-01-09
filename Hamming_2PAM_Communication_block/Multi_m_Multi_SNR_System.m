@@ -60,15 +60,18 @@ hold on
 % hold on
 
 %scatter(Eb_of_No_dB, BER, 20, "green", "filled", "o");   % scatter plot
-%plot(Eb_of_No_dB, BER, '-ro');                      % BER
-%hold on
-% legend("Uncoded 2PAM BER", "Simulation BER");
+% plot(Eb_of_No_dB, BER, '-ro');                      % BER
+% hold on
+% plot(x, y, '-ko');                      % BER
+%legend("Uncoded 2PAM BER", "Simulation BER");
 
 %scatter(Eb_of_No_dB, FER, 20, "red", "filled", "o");      % scatter plot
 plot(Eb_of_No_dB, FER, '-ro')                       % FER
+hold on
+plot(x, y, '-ko');                                          % FER
 grid,axis([-0.2 14 0.5*10^(-6) 1]); 
-%legend("Uncoded 2PAM BER", "Simulation BER");
-legend("Uncoded 2PAM FER", "Simulation FER");
+% legend("Uncoded 2PAM BER", "Soft decision BER", "Hard decision BER");
+legend("Uncoded 2PAM FER", "Hard decision FER", "Soft decision FER");
 %legend("Uncoded 2PAM BER", "Uncoded 2PAM FER", "Simulation BER", "Simulation FER");
 
 
