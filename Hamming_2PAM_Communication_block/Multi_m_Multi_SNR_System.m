@@ -48,8 +48,8 @@ end
 %% drawing graph
 close
 Eb_No = -2:0.01:14;
-%figure(1),semilogy( Eb_No, (qfunc ( sqrt(2*10.^((Eb_No)/10)) )), 'b--' );   % uncoded 2PAM BER graph
-%hold on
+figure(1),semilogy( Eb_No, (qfunc ( sqrt(2*10.^((Eb_No)/10)) )), 'b--' );   % uncoded 2PAM BER graph
+hold on
 
 semilogy( Eb_No, 1- (1-qfunc ( sqrt(2*10.^(Eb_No/10)))).^4, 'b--' );      % uncoded 2PAM FER graph
 xlabel('Eb/No [dB]'), ylabel('FER');
@@ -60,8 +60,8 @@ hold on
 % hold on
 
 %scatter(Eb_of_No_dB, BER, 20, "green", "filled", "o");   % scatter plot
-% plot(Eb_of_No_dB, BER, '-ro');                      % BER
-% hold on
+plot(Eb_of_No_dB, BER, '-ro');                      % BER
+hold on
 % plot(x, y, '-ko');                      % BER
 %legend("Uncoded 2PAM BER", "Simulation BER");
 
@@ -71,8 +71,8 @@ hold on
 plot(x, y, '-ko');                                          % FER
 grid,axis([-0.2 14 0.5*10^(-6) 1]); 
 % legend("Uncoded 2PAM BER", "Soft decision BER", "Hard decision BER");
-legend("Uncoded 2PAM FER", "Hard decision FER", "Soft decision FER");
-%legend("Uncoded 2PAM BER", "Uncoded 2PAM FER", "Simulation BER", "Simulation FER");
+% legend("Uncoded 2PAM FER", "Hard decision FER", "Soft decision FER");
+legend("Uncoded 2PAM BER", "Uncoded 2PAM FER", "Simulation BER", "Simulation FER");
 
 
 
