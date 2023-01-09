@@ -1,7 +1,7 @@
 % Viterbi decoding
 % 여기서는 예제로 96bit(=12B)의 메시지를 보낸다고 가정.
 function decoded_output = Viterbi_decoding(demodulated_output, num_message_bit)  
-    decoded_output = zeros(1, 102);  % 96bits + 6bit(tail bits)
+    decoded_output = zeros(1, num_message_bit + 6);  % 96bits + 6bit(tail bits)
 %---------------------------------------------------------------------------------
     % branch metric 계산을 위해서 각 state가 0과 1이 입력으로 들어왔을 때 어떤 출력을 하는지 미리 계산
     binVal = de2bi(0:63, 6, 'left-msb');  

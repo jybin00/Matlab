@@ -3,7 +3,7 @@ clear      % variable clear
 close     % figure close
 
 
-N_frame = 10000;                                   % frame 수
+N_frame = 10;                                   % frame 수
 input = randsrc(1, 96*N_frame, [0 1]);       % input의 개수
 
 encoded_input = Convolution_code_tail_bit(input, 96);
@@ -18,4 +18,4 @@ for i = 1:length(demodulated_output)/212
     decoding(1, 1+96*(i-1):96*i) = Viterbi_decoding_opt(demodulated_output(1, 1+212*(i-1):212*i), 96);
 end
 
-%nnz(input-decoding)
+nnz(input-decoding)

@@ -1,7 +1,7 @@
 % Viterbi decoding
 % 여기서는 예제로 96bit(=12B)의 메시지를 보낸다고 가정.
 function decoded_output = Viterbi_decoding_opt(demodulated_output, num_message_bit)  
-    decoded_output = zeros(1, 102);  % 96bits + 6bit(tail bits)
+    decoded_output = zeros(1, num_message_bit + 6);  % 96bits + 6bit(tail bits)
 %---------------------------------------------------------------------------------
     % branch metric 계산을 위해서 각 state가 0과 1이 입력으로 들어왔을 때 어떤 출력을 하는지 미리 계산
     output_zero =     [0 0;  1 1;  0 1;  1 0;  0 0;  1 1;  0 1;  1 0;
@@ -23,7 +23,7 @@ function decoded_output = Viterbi_decoding_opt(demodulated_output, num_message_b
                             0 1;  1 0;	0 0;	1 1;	0 1;	1 0;	0 0;	1 1;];  % 1이 입력으로 들어왔을 때 y1, y2
                         	
 %--------------------------------------------------------------------------------------
-    Path_metric = inf(64, num_message_bit+7);                               % 64 X 103 Path metric 저장 위한 matrix
+    Path_metric = inf(64, num_message_bit+7);                               % 64 X num_message_bit + 6 + 1 Path metric 저장 위한 matrix
     Message_bit = inf(64, num_message_bit + 7);                            % path message array
     for t = 1 : num_message_bit+6+1                                              % tail bits 존재
         if t == 1
@@ -50,9 +50,9 @@ function decoded_output = Viterbi_decoding_opt(demodulated_output, num_message_b
                     Message_bit((1+(64/2^(t-1))*(j-1)), t) = 1;
                 end
             end
-        elseif t > 97	       % 마지막 t = 98~103는 state가 접히는 시간
+        elseif t > num_message_bit + 1	       % 마지막 t = 98~103는 state가 접히는 시간
             codeword = demodulated_output(1, 1+2*(t-2): 2*(t-1));   % input을 두개씩 끊어서 codeword 구성
-            for j = 1 : 2^(103-t)			
+            for j = 1 : 2^(num_message_bit + 6 + 1 -t)			
                 Current_path = j-1;                                                      % ex) current_path   = [0 0 1 1 0 0]
                 Prev_Path_zero = mod(2*Current_path, 64)+1;             % prev_path_from 0 = [0 1 1 0 0 0] 끝자리 0
                 Prev_Path_one  = mod(2*Current_path + 1, 64) +1;      % prev_path_from 1 = [0 1 1 0 0 1] 끝자리 1
@@ -99,21 +99,22 @@ function decoded_output = Viterbi_decoding_opt(demodulated_output, num_message_b
 %----------------------------------------------------------------------------------
 % back tracing
     back_path = 0;                                          % 맨 마지막 state = [0 0 0 0 0 0]
-    Message_bit = Message_bit(:,2:103);         % Message matrix 한 칸 당기기.
-    for t = 1:102
+    Message_bit = Message_bit(:,2:num_message_bit + 6 + 1);         % Message matrix 한 칸 당기기.
+    for t = 1 : num_message_bit + 6
         prev_back_path0 = mod(2*back_path, 64)+1;  
         prev_back_path1 = mod(2*back_path + 1, 64) +1;
-        [~, I] = min([Path_metric(prev_back_path0, 103-t), Path_metric(prev_back_path1, 103-t )]);
+        [~, I] = min([Path_metric(prev_back_path0, num_message_bit + 6 + 1 -t), ...
+            Path_metric(prev_back_path1, num_message_bit + 6 + 1 -t )]);
         if I == 1
-            decoded_output(1,103-t) = Message_bit(back_path+1, 103-t);
+            decoded_output(1,num_message_bit + 6 + 1 -t) = Message_bit(back_path+1, num_message_bit + 6 + 1 -t);
             back_path = mod(2*back_path, 64);
             % disp(prev_back_path0+1)
         else
-            decoded_output(1,103-t) = Message_bit(back_path+1, 103-t);
+            decoded_output(1,num_message_bit + 6 + 1 -t) = Message_bit(back_path+1, num_message_bit + 6 + 1 -t);
             back_path = mod(2*back_path + 1, 64);
             % disp(prev_back_path1+1)
         end
     end
-    decoded_output = decoded_output(1:96);
+    decoded_output = decoded_output(1:num_message_bit);
 end
 
