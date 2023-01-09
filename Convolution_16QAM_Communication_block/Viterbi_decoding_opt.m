@@ -1,5 +1,6 @@
 % Viterbi decoding
 % 여기서는 예제로 96bit(=12B)의 메시지를 보낸다고 가정.
+% Convolution code는 다음과 같음. (7, [171, 133]) = (7, [1111001], [1011011])
 function decoded_output = Viterbi_decoding_opt(demodulated_output, num_message_bit)  
     decoded_output = zeros(1, num_message_bit + 6);  % 96bits + 6bit(tail bits)
 %---------------------------------------------------------------------------------
