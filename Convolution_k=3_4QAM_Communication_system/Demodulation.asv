@@ -1,5 +1,5 @@
 % ML demodulation
-% ML Metric이 가장 작은 값으로 demodulation
+% ML Metric이 가장 작은 코드
 
 function demodulated_output = Demodulation(received_signal)
     if received_signal(1) > 0                                   % 우반면
