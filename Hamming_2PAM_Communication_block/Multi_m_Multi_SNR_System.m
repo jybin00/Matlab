@@ -3,7 +3,7 @@ clear      % variable clear
 close     % figure close
 syms y  % calculation variable
 
-N_frames = 10000000;                              % number of symbols
+N_frames = 1000000;                              % number of symbols
 E_bit_db = 21;                                          % bit energy [dB]
 correct = zeros(E_bit_db, 2);                     % correct bit array
 error = zeros(E_bit_db, 2);                        % error bit array
@@ -14,8 +14,9 @@ Eb_of_No_dB = zeros(E_bit_db, 1);            % Eb of No[dB] aaray
 sigma_v = 2;                                             % noise variance  
 
 generated_sequnece = randsrc(1, 4*N_frames, [0 1]);         % #of frame X message bits
-
-for Eb_db = 7 : E_bit_db                            % Eb of No range
+Eb_db_index = 8;
+for Eb_db = [8 9 10 11 12 13 14 14.5 15 15.5 16 16.5 17]                            % Eb of No range
+    
     for i = 1 : N_frames
 
         input = generated_sequnece(1, 4*(i-1)+1 : 4*i);                                                         % seperate 4bits
@@ -29,17 +30,18 @@ for Eb_db = 7 : E_bit_db                            % Eb of No range
 
 
         c_or_e = BER_analysis(input, estimation);                           % correct or error bit save
-        correct(Eb_db,1) = correct(Eb_db,1) + c_or_e(1);                % count correct bit
-        error(Eb_db,1)    = error(Eb_db,1)    + c_or_e(2);                % count error bit
+        correct(Eb_db_index,1) = correct(Eb_db_index,1) + c_or_e(1);                % count correct bit
+        error(Eb_db_index,1)    = error(Eb_db_index,1)    + c_or_e(2);                % count error bit
 
         c_or_e2 = FER_analysis(input, estimation);                         % correct or error frame save
-        correct(Eb_db,2) = correct(Eb_db,2) + c_or_e2(1);              % count correct frame
-        error(Eb_db,2)    = error(Eb_db,2)    + c_or_e2(2);              % count error frame
+        correct(Eb_db_index,2) = correct(Eb_db_index,2) + c_or_e2(1);              % count correct frame
+        error(Eb_db_index,2)    = error(Eb_db_index,2)    + c_or_e2(2);              % count error frame
     end
 
-    BER(Eb_db) = error(Eb_db, 1)/(correct(Eb_db, 1) + error(Eb_db, 1));     % BER calculation alog Eb
-    FER(Eb_db) = error(Eb_db, 2)/(correct(Eb_db, 2) + error(Eb_db, 2));     % FER calculation along Eb
-    Eb_of_No_dB(Eb_db) = Eb_db - 10*log10(2*(sigma_v^2));                   % Eb[db] - No[db] = Eb/No [db]
+    BER(Eb_db_index) = error(Eb_db_index, 1)/(correct(Eb_db_index, 1) + error(Eb_db_index, 1));     % BER calculation alog Eb
+    FER(Eb_db_index) = error(Eb_db_index, 2)/(correct(Eb_db_index, 2) + error(Eb_db_index, 2));     % FER calculation along Eb
+    Eb_of_No_dB(Eb_db_index) = Eb_db - 10*log10(2*(sigma_v^2));                   % Eb[db] - No[db] = Eb/No [db]
+    Eb_db_index = Eb_db_index + 1;
 end
 
 

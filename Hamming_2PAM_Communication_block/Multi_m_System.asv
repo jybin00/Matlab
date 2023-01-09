@@ -1,14 +1,14 @@
-clc
-clear
-close
-syms y
+% clc
+% clear
+% close
+% syms y
 
 N_frames = 10000000;  % number of symbols
-correct = zeros(2, 1);
-error = zeros(2, 1);
-c_or_e = zeros(2, 1);
-c_or_e2 = zeros(2, 1);
-generated_sequnece = randsrc(4*N_frames, 1, [0 1]);
+% correct = zeros(2, 1);
+% error = zeros(2, 1);
+% c_or_e = zeros(2, 1);
+% c_or_e2 = zeros(2, 1);
+% generated_sequnece = randsrc(4*N_frames, 1, [0 1]);
 
 E_b = 20;
 sigma_v = 2;             % noise variance 
