@@ -1,7 +1,7 @@
 % Convolution coding (3, [8, 5]) = (3, [111], [101])
 
-function coded_signal = Convolution_code_tail_bit(input, message_bit)     % input sequence를 받는다.
-    coded_signal = zeros(1, length(message_bit));
+function coded_signal = Convolution_code(input)     % input sequence를 받는다.
+    coded_signal = zeros(1, (length(input)+2)*2);
     m = zeros(2, 1);                                                    % memory를 0으로 초기화 한다.
     input = [input zeros(1, 2)];                                    % message bit 후에 memory initialization을 위해서 zero padding
     
