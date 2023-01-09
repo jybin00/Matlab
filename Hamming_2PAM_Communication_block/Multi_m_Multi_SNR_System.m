@@ -3,7 +3,7 @@ clear      % variable clear
 close     % figure close
 syms y  % calculation variable
 
-N_frames = 1000000;                              % number of symbols
+N_frames = 10000000;                             % number of symbols
 E_bit_db = 21;                                          % bit energy [dB]
 correct = zeros(E_bit_db, 2);                     % correct bit array
 error = zeros(E_bit_db, 2);                        % error bit array
@@ -46,26 +46,31 @@ end
 
 
 %% drawing graph
+close
 Eb_No = -2:0.01:14;
-figure(1),semilogy( Eb_No, (qfunc ( sqrt(2*10.^((Eb_No)/10)) )), 'r--' );   % uncoded 2PAM BER graph
-hold on
+%figure(1),semilogy( Eb_No, (qfunc ( sqrt(2*10.^((Eb_No)/10)) )), 'b--' );   % uncoded 2PAM BER graph
+%hold on
 
 semilogy( Eb_No, 1- (1-qfunc ( sqrt(2*10.^(Eb_No/10)))).^4, 'b--' );      % uncoded 2PAM FER graph
-xlabel('Eb/No [dB]'), ylabel('BER, FER');
+xlabel('Eb/No [dB]'), ylabel('FER');
 hold on
+% legend("Uncoded 2PAM FER");
 
 % xline(-1.6, '-.m')
 % hold on
 
 %scatter(Eb_of_No_dB, BER, 20, "green", "filled", "o");   % scatter plot
-plot(Eb_of_No_dB, BER, '-go');                      
-hold on
+%plot(Eb_of_No_dB, BER, '-ro');                      % BER
+%hold on
+% legend("Uncoded 2PAM BER", "Simulation BER");
 
 %scatter(Eb_of_No_dB, FER, 20, "red", "filled", "o");      % scatter plot
-plot(Eb_of_No_dB, FER, '-ro')
-grid,axis([-2.2 14 10^(-7) 1]); 
+plot(Eb_of_No_dB, FER, '-ro')                       % FER
+grid,axis([-0.2 14 0.5*10^(-6) 1]); 
+%legend("Uncoded 2PAM BER", "Simulation BER");
+legend("Uncoded 2PAM FER", "Simulation FER");
+%legend("Uncoded 2PAM BER", "Uncoded 2PAM FER", "Simulation BER", "Simulation FER");
 
-legend('Uncoded 2PAM BER', 'Uncoded 2PAM FER', 'Simulation BER', 'Simulated FER');
 
 
 
