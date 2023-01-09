@@ -1,6 +1,6 @@
 % Convolution coding (7, [171, 133]) = (7, [1111001], [1011011])
 
-function coded_signal = Convolution_code_tail_bit(input, message_bit)     % input sequence를 받는다.
+function coded_signal = Convolution_code_tail_bit(input, message_bit)     % input sequence를 받는다. % m은 초기 
     coded_signal = zeros(1, length(message_bit));
     m = zeros(6, 1);                                                    % memory를 0으로 초기화 한다.
     input = [input zeros(1, 6)];                                    % message bit 후에 memory initialization을 위해서 zero padding
