@@ -3,8 +3,8 @@ clear      % variable clear
 close     % figure close
 syms y  % calculation variable
 
-N_frames = 5000000;                              % number of symbols
-E_bit_db = 16;                                          % bit energy [dB]
+N_frames = 10000000;                              % number of symbols
+E_bit_db = 21;                                          % bit energy [dB]
 correct = zeros(E_bit_db, 2);                     % correct bit array
 error = zeros(E_bit_db, 2);                        % error bit array
 BER = zeros(E_bit_db, 1);                          % bit error rate array
@@ -13,16 +13,17 @@ Eb_of_No_dB = zeros(E_bit_db, 1);            % Eb of No[dB] aaray
 
 sigma_v = 2;                                             % noise variance  
 
+generated_sequnece = randsrc(1, 4*N_frames, [0 1]);         % #of frame X message bits
+
 for Eb_db = 7 : E_bit_db                            % Eb of No range
-    generated_sequnece = randsrc(1, 4*N_frames, [0 1]);         % #of frame X message bits
     for i = 1 : N_frames
 
         input = generated_sequnece(1, 4*(i-1)+1 : 4*i);                                                         % seperate 4bits
         code = Hamming_Enc(input');                                                                                     % hamming encoding 
         modulated_signal = Two_PAM_mod(code, 10^(Eb_db/10));                                        % 2PAM modulation
         received_signal = AWGN_channel(modulated_signal, sigma_v);                                   % AWGN channel 
-        %demodulated_signal = Two_PAM_dem(received_signal, sigma_v, 10^(Eb_db/10));      % LLR demodulation
-        %estimation = Hamming_DEC(demodulated_signal);                                                     % DEC
+        % demodulated_signal = Two_PAM_dem(received_signal, sigma_v, 10^(Eb_db/10));      % LLR demodulation
+        % estimation = Hamming_DEC(demodulated_signal);                                                     % DEC
         %-----------------------------------------------------------------------------------
         estimation = Soft_decision_DEC(received_signal', 10^(Eb_db/10));                            % soft decision
 
@@ -51,17 +52,18 @@ semilogy( Eb_No, 1- (1-qfunc ( sqrt(2*10.^(Eb_No/10)))).^4, 'b--' );      % unco
 xlabel('Eb/No [dB]'), ylabel('BER, FER');
 hold on
 
-xline(-1.6, '-.m')
+% xline(-1.6, '-.m')
+% hold on
+
+%scatter(Eb_of_No_dB, BER, 20, "green", "filled", "o");   % scatter plot
+plot(Eb_of_No_dB, BER, '-go');                      
 hold on
 
-%scatter(Eb_of_No_dB, BER, 20, "green", "filled", "o");
-plot(Eb_of_No_dB, BER, '-go');
-hold on
-
-%scatter(Eb_of_No_dB, FER, 20, "red", "filled", "o");
+%scatter(Eb_of_No_dB, FER, 20, "red", "filled", "o");      % scatter plot
 plot(Eb_of_No_dB, FER, '-ro')
-grid,axis([-2.2 14 10^(-7) 1]), legend('Uncoded 2PAM BER', 'Uncoded 2PAM FER', 'Shannon limit', ...
-    'Simulation BER', 'Simulated FER');
+grid,axis([-2.2 14 10^(-7) 1]); 
+
+legend('Uncoded 2PAM BER', 'Uncoded 2PAM FER', 'Simulation BER', 'Simulated FER');
 
 
 
