@@ -3,7 +3,7 @@ clear
 close
 tic
 N_m_bit = 50;                                                    % Number of message bit
-N_frame = 10000;                                                 % Number of frame
+N_frame = 1000;                                                 % Number of frame
 test_bit = randsrc(N_frame, N_m_bit, [0 1]);       % test bit generation
 
 
@@ -22,7 +22,8 @@ for Eb_db = 2: Eb_db_final             % Eb를 바꿔가면서 계산
         % 1~ message bit || 1+ message bit ~ 2* message bit ....
         % encoded input = (message_bit + tail bit) * 2
         input = test_bit(j, :);
-        encoded_input = Convolution_code(input);   
+        encoded_input = Convolution_code(input);  
+        demodulated_output = zeros(1, 2*(N_m_bit+2));
 
         % modulation -> channel -> demodulation
         for i = 1: (N_m_bit+2)
