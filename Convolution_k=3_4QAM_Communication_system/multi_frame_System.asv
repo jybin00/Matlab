@@ -2,8 +2,8 @@ clc
 clear
 close
 tic
-N_m_bit = 50;                                                    % Number of message bit
-N_frame = 150000;                                            % Number of frame
+N_m_bit = 25;                                                    % Number of message bit
+N_frame = 300000;                                            % Number of frame
 test_bit = randsrc(N_frame, N_m_bit, [0 1]);       % test bit generation
 
 
@@ -16,7 +16,7 @@ error = zeros(1, Eb_db_final);
 demodulated_output = zeros(1, 2*(N_m_bit+2));
 
 
-parfor Eb_db = 2: Eb_db_final             % Eb를 바꿔가면서 계산
+for Eb_db = 2: Eb_db_final             % Eb를 바꿔가면서 계산
     for j = 1 : N_frame                       % frame 개수만큼 계산
 
         % 1~ message bit || 1+ message bit ~ 2* message bit ....
