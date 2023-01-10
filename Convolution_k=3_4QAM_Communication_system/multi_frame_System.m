@@ -1,9 +1,8 @@
 clc
 clear
-close
 tic
 N_m_bit = 50;                                                    % Number of message bit
-N_frame = 200000;                                            % Number of frame
+N_frame = 1000000;                                            % Number of frame
 test_bit = randsrc(N_frame, N_m_bit, [0 1]);       % test bit generation
 
 
@@ -59,26 +58,29 @@ toc
 close
 Eb_of_No_db = -1:0.1:15;
 % theorical BER
-figure(1), semilogy(Eb_of_No_db, 4*(1-1/2)*qfunc(sqrt(10.^(Eb_of_No_db/10) ) ), 'r--' );
-hold on
+% figure(1), semilogy(Eb_of_No_db, 4*(1-1/2)*qfunc(sqrt(10.^(Eb_of_No_db/10) ) ), 'r--' );
+% hold on
 
 % label
 
 % sim BER
-plot(Eb_No_db_sim, BER, 'bo-')
-% hold on
+% plot(Eb_No_db_sim, BER, 'bo-')
+%hold on
+%plot(x, y, 'ko-')
+
 % theorical FER
-% semilogy(Eb_of_No_db, 1- (1-4*(1-1/2)*qfunc(sqrt(10.^(Eb_of_No_db/10) ) )).^(N_m_bit), 'r--' );
-% hold on
+semilogy(Eb_of_No_db, 1- (1-4*(1-1/2)*qfunc(sqrt(10.^(Eb_of_No_db/10) ) )).^(N_m_bit), 'r--' );
+hold on
 % sim FER
-% plot(Eb_No_db_sim, FER, 'bo-')
+plot(Eb_No_db_sim, FER, 'bo-')
+ %plot(x, y, 'ko-')
 
 axis([-1 15 0.5*10^-6 1])
 xticks([-1:2:15])
 grid on
 
 xlabel("Eb/No"); 
-ylabel('BER');
+ylabel('FER');
 
-legend('Uncoded 4QAM BER', 'Hard Viterbi v = 2, m = 50')
-% legend('Uncoded 4QAM FER', 'Hard Viterbi v = 2, m = 50')
+% legend('Uncoded 4QAM BER', 'Soft Viterbi v = 2, m = 50', 'Hard Viterbi v = 2, m = 50')
+legend('Uncoded 4QAM FER', 'Soft Viterbi v = 2, m = 50', 'Hard Viterbi v = 2, m = 50')
