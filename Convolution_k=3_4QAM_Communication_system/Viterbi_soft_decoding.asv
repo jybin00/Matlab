@@ -31,13 +31,13 @@ function decoded_output = Viterbi_soft_decoding(received_signal, num_message_bit
                 % BM = min{ 끝자리 0에서 온 PM + BM, 끝자리 1에서 온 PM + BM}
                 if Current_path < 2                                                      % 입력 0을 받아서 현재 값이 되었는가?
                     BM_zero = sum((output_zero(Prev_Path_zero, :) - codeword(t-1,:)).^2); % 끝자리가 0인 코드에 0이 들어왔을 때 outputd으로 BM 계산
-                    BM_one  = sum((output_zero(Prev_Path_one, :) - codeword(t-1, :)).^2);  % 끝자리가 1인 코드에 0이 들어왔을 때
+                    BM_one  = sum(output_zero(Prev_Path_one, :) - codeword(t-1, :), 2));  % 끝자리가 1인 코드에 0이 들어왔을 때
                     Path_metric((1+(4/2^(t-1))*(j-1)), t) = min(Path_metric(Prev_Path_zero, t-1) + BM_zero, ...
                         Path_metric(Prev_Path_one, t-1) + BM_one);
                     Message_bit((1+(4/2^(t-1))*(j-1)),t) = 0;
 				else	                                                                             % 입력 1을 받아서 현재 값이 되었는가?
-                    BM_zero = sum((output_one(Prev_Path_zero, :) - codeword(t-1,:)).^2);
-                    BM_one  = sum((output_one(Prev_Path_one, :) - codeword(t-1, :)).^2);
+                    BM_zero = nnz( mod(output_one(Prev_Path_zero, :) - codeword(t-1, :), 2));
+                    BM_one  = nnz( mod(output_one(Prev_Path_one, :) - codeword(t-1, :), 2));
                     Path_metric((1+(4/2^(t-1))*(j-1)), t) = min(Path_metric(Prev_Path_one, t-1) + BM_one, ...
                         Path_metric(Prev_Path_zero, t-1) + BM_zero);
                     Message_bit((1+(4/2^(t-1))*(j-1)), t) = 1;
@@ -52,13 +52,13 @@ function decoded_output = Viterbi_soft_decoding(received_signal, num_message_bit
                 % BM = min{ 끝자리 0에서 온 PM + BM, 끝자리 1에서 온 PM + BM}
                 if Current_path < 32                                                    % 입력 0을 받아서 현재 값이 되었는가?
                     BM_zero = sum((output_zero(Prev_Path_zero, :) - codeword(t-1,:)).^2);
-                    BM_one  = sum((output_zero(Prev_Path_one, :) - codeword(t-1, :)).^2);
+                    BM_one  = nnz( mod(output_zero(Prev_Path_one, :) - codeword(t-1, :), 2));
                     Path_metric(j, t) = min(Path_metric(Prev_Path_zero, t-1) + BM_zero, ...
                         Path_metric(Prev_Path_one, t-1) + BM_one);
                     Message_bit(j,t) = 0;
                 else                                                                             % 입력 1을 받아서 현재 값이 되었는가?
-                    BM_zero = sum((output_one(Prev_Path_zero, :) - codeword(t-1,:)).^2);
-                    BM_one  = sum((output_one(Prev_Path_one, :) - codeword(t-1, :)).^2);
+                    BM_zero = nnz( mod(output_one(Prev_Path_zero, :) - codeword(t-1, :), 2));
+                    BM_one  = nnz( mod(output_one(Prev_Path_one, :) - codeword(t-1, :), 2));
                     Path_metric(j, t) = min(Path_metric(Prev_Path_one, t-1) + BM_one, ...
                         Path_metric(Prev_Path_zero, t-1) + BM_zero);
                     Message_bit(j,t) = 1;
@@ -73,13 +73,13 @@ function decoded_output = Viterbi_soft_decoding(received_signal, num_message_bit
                 % BM = min{ 끝자리 0에서 온 PM + BM, 끝자리 1에서 온 PM + BM}
                 if Current_path < 2    % 입력 0을 받아서 현재 값이 되었는가?
                     BM_zero = sum((output_zero(Prev_Path_zero, :) - codeword(t-1,:)).^2);
-                    BM_one  = sum((output_zero(Prev_Path_one, :) - codeword(t-1, :)).^2);
+                    BM_one  = nnz( mod(output_zero(Prev_Path_one, :) - codeword(t-1, :), 2));
                     Path_metric(j, t) = min(Path_metric(Prev_Path_zero, t-1) + BM_zero, ...
                         Path_metric(Prev_Path_one, t-1) + BM_one);
                     Message_bit(j,t) = 0;
                 else                            % 입력 1을 받아서 현재 값이 되었는가?
-                    BM_zero = sum((output_one(Prev_Path_zero, :) - codeword(t-1,:)).^2);
-                    BM_one  = sum((output_one(Prev_Path_one, :) - codeword(t-1, :)).^2);
+                    BM_zero = nnz( mod(output_one(Prev_Path_zero, :) - codeword(t-1, :), 2));
+                    BM_one  = nnz( mod(output_one(Prev_Path_one, :) - codeword(t-1, :), 2));
                     Path_metric(j, t) = min(Path_metric(Prev_Path_zero, t-1) + BM_zero, ...
                         Path_metric(Prev_Path_one, t-1) + BM_one);
                     Message_bit(j,t) = 1;

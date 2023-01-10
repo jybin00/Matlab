@@ -23,7 +23,9 @@ parfor Eb_db = 2: Eb_db_final             % Eb를 바꿔가면서 계산
         % encoded input = (message_bit + tail bit) * 2
         input = test_bit(j, :);
         encoded_input = Convolution_code(input);  
-        demodulated_output = zeros(1, 2*(N_m_bit+2));
+        % demodulated_output = zeros(1, 2*(N_m_bit+2));
+        received_signal = zeros(1, 2*(N_m_bit+2));
+
         encoded_input = reshape(encoded_input, [2 N_m_bit+2]);
         encoded_input = encoded_input';
 
@@ -33,13 +35,13 @@ parfor Eb_db = 2: Eb_db_final             % Eb를 바꿔가면서 계산
             modulated_output = four_QAM( encoded_input(i, :), 10^(Eb_db/10) );
 
             % Signal transmitt through AWGN channel with noise variance sigma_v
-            received_signal = AWGN_Channel(modulated_output, sigma_v);
+            received_signal(1, 2*(i-1)+1 : 2*i) = AWGN_Channel(modulated_output, sigma_v);
 
             % ML demodulation
-            demodulated_output(1, 2*(i-1)+1 : 2*i)=Demodulation(received_signal);
+            % demodulated_output(1, 2*(i-1)+1 : 2*i)=Demodulation(received_signal);
         end
 
-        decoding = Viterbi_decoding(demodulated_output, N_m_bit);
+        decoding = Viterbi_soft_decoding(received_signal, N_m_bit, 10^(Eb_db/10));
         a = nnz(input-decoding);
         if a > 0
             FER(1, Eb_db)= FER(1, Eb_db) + 1;
