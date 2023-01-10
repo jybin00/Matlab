@@ -5,7 +5,6 @@
 function modulated_signal = four_QAM(coded_signal, Ebav)
     switch_int = 0;
     for i = 1 : 2
-        coded_signal(i);
         switch_int = switch_int + 2^(2-i)*coded_signal(i);
         switch switch_int               % grey coding
             case 0                          % [0 0]

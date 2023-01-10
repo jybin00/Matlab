@@ -3,7 +3,7 @@ clear
 close
 tic
 N_m_bit = 50;                                                    % Number of message bit
-N_frame = 150000;                                            % Number of frame
+N_frame = 200000;                                            % Number of frame
 test_bit = randsrc(N_frame, N_m_bit, [0 1]);       % test bit generation
 
 
@@ -24,11 +24,13 @@ parfor Eb_db = 2: Eb_db_final             % Eb를 바꿔가면서 계산
         input = test_bit(j, :);
         encoded_input = Convolution_code(input);  
         demodulated_output = zeros(1, 2*(N_m_bit+2));
+        encoded_input = reshape(encoded_input, [2 N_m_bit+2]);
+        encoded_input = encoded_input';
 
         % modulation -> channel -> demodulation
         for i = 1: (N_m_bit+2)
             % 4QAM => 2 signal -> 1 symbol
-            modulated_output = four_QAM( encoded_input(1, 2*(i-1)+1 : 2*i), 10^(Eb_db/10) );
+            modulated_output = four_QAM( encoded_input(i, :), 10^(Eb_db/10) );
 
             % Signal transmitt through AWGN channel with noise variance sigma_v
             received_signal = AWGN_Channel(modulated_output, sigma_v);
@@ -55,26 +57,26 @@ toc
 close
 Eb_of_No_db = -1:0.1:15;
 % theorical BER
-% figure(1), semilogy(Eb_of_No_db, 4*(1-1/2)*qfunc(sqrt(10.^(Eb_of_No_db/10) ) ), 'r--' );
-%hold on
+figure(1), semilogy(Eb_of_No_db, 4*(1-1/2)*qfunc(sqrt(10.^(Eb_of_No_db/10) ) ), 'r--' );
+hold on
 
 % label
 
 % sim BER
-% plot(Eb_No_db_sim, BER, 'bo-')
-%hold on
+plot(Eb_No_db_sim, BER, 'bo-')
+% hold on
 % theorical FER
-semilogy(Eb_of_No_db, 1- (1-4*(1-1/2)*qfunc(sqrt(10.^(Eb_of_No_db/10) ) )).^(N_m_bit), 'r--' );
-hold on
+% semilogy(Eb_of_No_db, 1- (1-4*(1-1/2)*qfunc(sqrt(10.^(Eb_of_No_db/10) ) )).^(N_m_bit), 'r--' );
+% hold on
 % sim FER
-plot(Eb_No_db_sim, FER, 'bo-')
+% plot(Eb_No_db_sim, FER, 'bo-')
 
 axis([-1 15 0.5*10^-6 1])
 xticks([-1:2:15])
 grid on
 
 xlabel("Eb/No"); 
-ylabel('FER');
+ylabel('BER');
 
-% legend('Uncoded 4QAM BER', 'Hard Viterbi v = 2, m = 25')
-legend('Uncoded 4QAM FER', 'Hard Viterbi v = 2, m = 25')
+legend('Uncoded 4QAM BER', 'Hard Viterbi v = 2, m = 50')
+% legend('Uncoded 4QAM FER', 'Hard Viterbi v = 2, m = 50')
