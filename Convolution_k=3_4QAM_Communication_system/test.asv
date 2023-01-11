@@ -12,11 +12,11 @@ berEstSoft = zeros(size(EbNoVec));
 berEstHard = zeros(size(EbNoVec));
 
 % trellis = poly2trellis(7,[171 133]);
-trellis = poly2trellis(3, [7 5]);
+trellis = poly2trellis(3,[7 5]);
 tbl = 4;
 rate = 1/2;
 
-for n = 1:length(EbNoVec)
+parfor n = 1:length(EbNoVec)
     % Convert Eb/No to SNR
     snrdB = EbNoVec(n) + 10*log10(k*rate);
     % Noise variance calculation for unity average signal power
@@ -24,7 +24,7 @@ for n = 1:length(EbNoVec)
     % Reset the error and bit counters
     [numErrsSoft,numErrsHard,numBits] = deal(0);
     
-    while numErrsSoft < 100 && numBits < 1e1
+    while numErrsSoft < 400 && numBits < 3*1e6
         % Generate binary data and convert to symbols
         dataIn = randi([0 1],numSymPerFrame*k,1);
         
@@ -37,18 +37,17 @@ for n = 1:length(EbNoVec)
             UnitAveragePower=true);
         
         % Pass through AWGN channel
-        rxSig = awgn(txSig, snrdB, 'measured');
+        rxSig = awgn(txSig,snrdB, 'measured');
         
         % Demodulate the noisy signal using hard decision (bit) and
         % soft decision (approximate LLR) approaches.
         rxDataHard = qamdemod(rxSig,M, ...
             OutputType='bit', ...
-            UnitAveragePower=true);
+            UnitAveragePower=true)
         rxDataSoft = qamdemod(rxSig,M, ...
             OutputType='approxllr', ...
             UnitAveragePower=true, ...
-            NoiseVariance=noiseVar);
-        disp(rxDataSoft)
+            NoiseVariance=noiseVar)
         
         % Viterbi decode the demodulated data
         dataHard = vitdec(rxDataHard,trellis,tbl,'cont','hard');
