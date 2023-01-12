@@ -1,5 +1,5 @@
 % AWGN channel
 
-function received_signal = AWGN_channel(code, sigma_v)         % AWGN channel function
-    received_signal = code + randn(1, length(code))* sigma_v;    % Y = X + N
+function received_signal = AWGN_Channel(code, sigma_v)         % AWGN channel function
+    received_signal = code + sigma_v*(randn(1, length(code)) +1i*randn(1, length(code)));    % Y = X + N
 end
