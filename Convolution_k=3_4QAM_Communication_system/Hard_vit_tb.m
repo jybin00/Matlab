@@ -6,8 +6,7 @@ N_frame = 100000;                                            % Number of frame
 test_bit = randsrc(N_frame, N_m_bit, [0 1]);       % test bit generation
 
 
-
-Eb_db_final = 22;
+Eb_db_final = 19;
 Eb_No_db_sim = zeros(1, Eb_db_final);
 sigma_v = 2;
 FER = zeros(1, Eb_db_final);
@@ -15,7 +14,7 @@ error = zeros(1, Eb_db_final);
 demodulated_output = zeros(1, 2*(N_m_bit+2));
 
 
-parfor Eb_db = 2: Eb_db_final             % Eb를 바꿔가면서 계산
+parfor Eb_db = 8: Eb_db_final             % Eb를 바꿔가면서 계산
     for j = 1 : N_frame                       % frame 개수만큼 계산
 
         % 1~ message bit || 1+ message bit ~ 2* message bit ....
@@ -23,7 +22,6 @@ parfor Eb_db = 2: Eb_db_final             % Eb를 바꿔가면서 계산
         input = test_bit(j, :);
         encoded_input = Convolution_code(input);  
         demodulated_output = zeros(1, 2*(N_m_bit+2));
-        received_signal = zeros(1, (N_m_bit+2));
 
         encoded_input = reshape(encoded_input, [2 N_m_bit+2]);
         encoded_input = encoded_input';
@@ -31,7 +29,7 @@ parfor Eb_db = 2: Eb_db_final             % Eb를 바꿔가면서 계산
         % modulation -> channel -> demodulation
         for i = 1: (N_m_bit+2)
             % 4QAM => 2 signal -> 1 symbol
-            modulated_output = four_QAM( encoded_input(i, :), 2* 10^(Eb_db/10) );
+            modulated_output = four_QAM( encoded_input(i, :), 2*10^(Eb_db/10) );
 
             % Signal transmitt through AWGN channel with noise variance sigma_v
             received_signal = AWGN_Channel(modulated_output, sigma_v);
@@ -87,7 +85,7 @@ legend('Uncoded 4QAM BER', 'Hard Viterbi v = 2, m = 50', 'Soft Viterbi v = 2, m 
 % legend('Uncoded 4QAM FER', 'Soft Viterbi v = 2, m = 50', 'Hard Viterbi v = 2, m = 50')
 %%
 close
-Eb_of_No_db = -1:0.1:15;
+Eb_of_No_db = 0:0.1:14;
 figure(2)
 % theorical FER
 semilogy(Eb_of_No_db, 1- (1-qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) )).^(N_m_bit), 'r--' );
@@ -97,7 +95,7 @@ plot(Eb_No_db_sim, FER, 'bo-')
  %plot(x, y, 'ko-')
 
 axis([-1 15 0.5*10^-6 1])
-xticks([-1:2:13])
+xticks([0:2:14])
 grid on
 
 xlabel("Eb/No"); 
