@@ -1,17 +1,19 @@
 % Viterbi decoding
-% Convolution code는 다음과 같음. (3, [8, 5]) = (7, [111], [101])
+% Convolution code는 다음과 같음. (3, [7, 5]) = (7, [111], [101])
 function decoded_output = Viterbi_decoding(demodulated_output, num_message_bit)  
-    decoded_output = zeros(1, num_message_bit + 2);  % demodulated_bit + 2bit(tail bits)
+    
+    tail_bit = 2;
+    decoded_output = zeros(1, num_message_bit + tail_bit);  % demodulated_bit + 2bit(tail bits)
 %---------------------------------------------------------------------------------
     % branch metric 계산을 위해서 각 state가 0과 1이 입력으로 들어왔을 때 어떤 출력을 하는지 미리 계산
     output_zero =  [0 0;  1 1;  1 0;  0 1];
 
     output_one =  [1 1;  0 0;	0 1;	1 0];  % 1이 입력으로 들어왔을 때 p1, p2
-    codeword = reshape(demodulated_output, [2, num_message_bit + 2]);       % input을 두개씩 끊어서 codeword 구성
+    codeword = reshape(demodulated_output, [2, num_message_bit + tail_bit]);       % input을 두개씩 끊어서 codeword 구성
     codeword = codeword';
 %--------------------------------------------------------------------------------------
-    Path_metric = inf(4, num_message_bit+2 + 1);                               % 4 X num_message_bit + 2 + 1 Path metric 저장 위한 matrix
-    Message_bit = inf(4, num_message_bit + 2 + 1);                            % path message array
+    Path_metric = inf(4, num_message_bit+ tail_bit + 1);                               % 4 X num_message_bit + 2 + 1 Path metric 저장 위한 matrix
+    Message_bit = inf(4, num_message_bit + tail_bit + 1);                            % path message array
     for t = 1 : num_message_bit+2+1                                              % tail bits 존재
         if t == 1
             Path_metric(1, 1) = 0;	                                                      % 맨 처음 state

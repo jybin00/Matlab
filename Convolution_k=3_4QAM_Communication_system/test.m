@@ -13,7 +13,7 @@ berEstHard = zeros(size(EbNoVec));
 
 % trellis = poly2trellis(7,[171 133]);
 trellis = poly2trellis(3, [7 5]);
-tbl = 4;
+tbl = 24;
 rate = 1/2;
 
 for n = 1:length(EbNoVec)
@@ -24,7 +24,7 @@ for n = 1:length(EbNoVec)
     % Reset the error and bit counters
     [numErrsSoft,numErrsHard,numBits] = deal(0);
     
-    while numErrsSoft < 100 && numBits < 1e1
+    while numErrsSoft < 100 && numBits < 1e7
         % Generate binary data and convert to symbols
         dataIn = randi([0 1],numSymPerFrame*k,1);
         
@@ -48,7 +48,6 @@ for n = 1:length(EbNoVec)
             OutputType='approxllr', ...
             UnitAveragePower=true, ...
             NoiseVariance=noiseVar);
-        disp(rxDataSoft)
         
         % Viterbi decode the demodulated data
         dataHard = vitdec(rxDataHard,trellis,tbl,'cont','hard');
