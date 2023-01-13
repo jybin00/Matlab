@@ -1,8 +1,8 @@
 clc
 clear
 tic
-N_m_bit = 50;                                                    % Number of message bit
-N_frame = 100000;                                            % Number of frame
+N_m_bit = 25;                                                    % Number of message bit
+N_frame = 400000;                                            % Number of frame
 test_bit = randsrc(N_frame, N_m_bit, [0 1]);       % test bit generation
 
 
@@ -10,7 +10,9 @@ Eb_db_final = 19;
 Eb_No_db_sim = zeros(1, Eb_db_final);
 sigma_v = 2;
 FER = zeros(1, Eb_db_final);
+BER = zeros(1, Eb_db_final);
 error = zeros(1, Eb_db_final);
+N_f_sim(1,1:Eb_db_final) = N_frame;
 demodulated_output = zeros(1, 2*(N_m_bit+2));
 
 
@@ -42,19 +44,22 @@ parfor Eb_db = 8: Eb_db_final             % Eb를 바꿔가면서 계산
         a = nnz(input-decoding);
         if a > 0
             FER(1, Eb_db)= FER(1, Eb_db) + 1;
+            error(1, Eb_db) = error(1, Eb_db) + a
         end
-        error(1, Eb_db) = error(1, Eb_db) + a
-        
+%         if error(1, Eb_db) > 200
+%             N_f_sim(1, Eb_db) = j;
+%             break
+%         end
     end
     Eb_No_db_sim(1, Eb_db) = Eb_db - 10*log10(2*sigma_v^2);
+    BER(1, Eb_db) = error(1, Eb_db) / (N_f_sim(1, Eb_db) * N_m_bit);
+    FER(1, Eb_db) = FER(1, Eb_db) / N_f_sim(1, Eb_db);
 end
-BER = error / numel(test_bit);
-FER = FER / N_frame;
+% FER = FER / N_frame;
 toc
 
 %%
-close
-clc
+close all
 Eb_of_No_db = -1:0.1:15;
 % theorical BER
 figure(1), semilogy(Eb_of_No_db, qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) ), 'r--' );
@@ -75,16 +80,16 @@ plot(Eb_No_db_sim, BER, 'bo-')
  %plot(x, y, 'ko-')
 
 axis([0 14 0.5*10^-6 1])
-xticks([0:2:14])
+xticks(0:2:14)
 grid on
 
 xlabel("Eb/No"); 
 ylabel('BER');
 
-legend('Uncoded 4QAM BER', 'Hard Viterbi v = 2, m = 50', 'Soft Viterbi v = 2, m = 50')
-% legend('Uncoded 4QAM FER', 'Soft Viterbi v = 2, m = 50', 'Hard Viterbi v = 2, m = 50')
+%legend('Uncoded 4QAM BER', 'Hard Viterbi v = 2, m = 50', 'Soft Viterbi v = 2, m = 50')
+legend('Uncoded 4QAM BER', 'Hard Viterbi v = 2, m = 25', 'Hard Viterbi v = 2, m = 50')
 %%
-close
+close all
 Eb_of_No_db = 0:0.1:14;
 figure(2)
 % theorical FER
@@ -94,8 +99,8 @@ hold on
 plot(Eb_No_db_sim, FER, 'bo-')
  %plot(x, y, 'ko-')
 
-axis([-1 15 0.5*10^-6 1])
-xticks([0:2:14])
+axis([0 14 10^-5 10])
+xticks(0:2:14)
 grid on
 
 xlabel("Eb/No"); 

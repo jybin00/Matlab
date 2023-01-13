@@ -40,12 +40,12 @@ function decoded_output = Viterbi_decoding(demodulated_output, num_message_bit)
             end
         elseif t > num_message_bit + 1	       % 마지막 2 state는 접히는 시간
             for j = 1 : 2^(num_message_bit + 2 + 1 -t)			
-                Current_path = j-1;                                                      % ex) current_path   = [0 0]
+                Current_path = j-1;                                                     % ex) current_path   = [0 0]
                 Prev_Path_zero = mod(2*Current_path, 4)+1;             % prev_path_from 0 = [0 0] 끝자리 0
                 Prev_Path_one  = mod(2*Current_path + 1, 4) +1;      % prev_path_from 1 = [0 1] 끝자리 1
 
                 % BM = min{ 끝자리 0에서 온 PM + BM, 끝자리 1에서 온 PM + BM}
-                if Current_path < 32                                                    % 입력 0을 받아서 현재 값이 되었는가?
+                if Current_path < 2                                                     % 입력 0을 받아서 현재 값이 되었는가?
                     BM_zero = nnz( mod(output_zero(Prev_Path_zero, :) - codeword(t-1, :), 2));
                     BM_one  = nnz( mod(output_zero(Prev_Path_one, :) - codeword(t-1, :), 2));
                     Path_metric(j, t) = min(Path_metric(Prev_Path_zero, t-1) + BM_zero, ...
@@ -84,20 +84,20 @@ function decoded_output = Viterbi_decoding(demodulated_output, num_message_bit)
     end
 %----------------------------------------------------------------------------------
 % back tracing
-    back_path = 0;                                          % 맨 마지막 state = [0 0]
+    current_path = 0;                                          % 맨 마지막 state = [0 0]
     Message_bit = Message_bit(:,2:num_message_bit + 2 + 1);         % Message matrix 한 칸 당기기.
     for t = 1 : num_message_bit + 2
-        prev_back_path0 = mod(2*back_path, 4)+1;  
-        prev_back_path1 = mod(2*back_path + 1, 4) +1;
+        prev_back_path0 = mod(2*current_path, 4)+1;  
+        prev_back_path1 = mod(2*current_path + 1, 4) +1;
         [~, I] = min([Path_metric(prev_back_path0, num_message_bit + 2 + 1 -t), ...
             Path_metric(prev_back_path1, num_message_bit + 2 + 1 -t )]);
         if I == 1
-            decoded_output(1,num_message_bit + 2 + 1 -t) = Message_bit(back_path+1, num_message_bit + 2 + 1 -t);
-            back_path = mod(2*back_path, 4);
+            decoded_output(1,num_message_bit + 2 + 1 -t) = Message_bit(current_path+1, num_message_bit + 2 + 1 -t);
+            current_path = mod(2*current_path, 4);
             % disp(prev_back_path0+1)
         else
-            decoded_output(1,num_message_bit + 2 + 1 -t) = Message_bit(back_path+1, num_message_bit + 2 + 1 -t);
-            back_path = mod(2*back_path + 1, 4);
+            decoded_output(1,num_message_bit + 2 + 1 -t) = Message_bit(current_path+1, num_message_bit + 2 + 1 -t);
+            current_path = mod(2*current_path + 1, 4);
             % disp(prev_back_path1+1)
         end
     end
