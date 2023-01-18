@@ -18,13 +18,13 @@ rate = 1/2;
 
 for n = 1:length(EbNoVec)
     % Convert Eb/No to SNR
-    snrdB = EbNoVec(n) + 10*log10(k*rate);
+    snrdB = EbNoVec(n) + 10*log10(k);
     % Noise variance calculation for unity average signal power
     noiseVar = 10.^(-snrdB/10);
     % Reset the error and bit counters
     [numErrsSoft,numErrsHard,numBits] = deal(0);
     
-    while numErrsSoft < 100 && numBits < 1e7
+    while numErrsSoft < 100 && numBits < 5e6
         % Generate binary data and convert to symbols
         dataIn = randi([0 1],numSymPerFrame*k,1);
         
