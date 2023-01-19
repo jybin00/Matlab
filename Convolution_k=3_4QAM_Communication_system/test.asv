@@ -80,7 +80,7 @@ semilogy(EbNoVec,[berEstSoft berEstHard],'-*')
 hold on
 semilogy(EbNoVec,berawgn(EbNoVec,'qam',M))
 hold on
-semilogy(EbNoVec, qfunc(sqrt(2*10.^(EbNoVec/10) ) ), 'r--' );  %% coding gain은 고려 X modulation만 고려.
+semilogy(EbNoVec, qfunc(sqrt(2*10.^(EbNoVec/10) ) ), 'r--' );  %%
 %hold on
 legend('Soft','Hard','Uncoded','theorical','location','best')
 grid
