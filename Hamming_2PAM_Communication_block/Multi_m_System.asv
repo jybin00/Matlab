@@ -40,7 +40,7 @@ for i = 1 : N_frames
 end
 BER = error(1,1)/(4*N_frames);
 FER = error(2,1)/N_frames;
-Eb_of_No_dB = 10*log10(E_s/((4/7)*2*(sigma_v^2)));
+Eb_of_No_dB = 10*log10(E_s/((4/7*2*(sigma_v^2)));
 
 
 %% drawing graph

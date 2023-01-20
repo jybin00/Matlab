@@ -1,11 +1,11 @@
 %% 2PAM (Pulse Amplitude Modulation) Modulator
 
-function modulated_signal = Two_PAM_mod(code, Eb)   % Original code, bit energy
+function modulated_signal = Two_PAM_mod(code, Es)   % Original code, bit energy
     for i = 1:length(code)
         if code(i) == 1
-            code(i) = sqrt(Eb);
+            code(i) = sqrt(Es);
         else
-            code(i) = -sqrt(Eb);
+            code(i) = -sqrt(Es);
         end
     end
     modulated_signal = code;
