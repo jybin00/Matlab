@@ -1,12 +1,12 @@
 clc
 clear
 tic
-N_m_bit = 25;                                                    % Number of message bit
+N_m_bit = 50;                                                    % Number of message bit
 N_frame = 400000;                                            % Number of frame
 test_bit = randsrc(N_frame, N_m_bit, [0 1]);       % test bit generation
 
 
-Eb_db_final = 17;
+Eb_db_final = 19;
 Eb_No_db_sim = zeros(1, Eb_db_final);
 
 FER_soft = zeros(1, Eb_db_final);
@@ -65,7 +65,7 @@ parfor Eb_db = 8: Eb_db_final          % Eb를 바꿔가면서 계산
             error_hard(1, Eb_db) = error_hard(1, Eb_db) + error_h;
         end
 
-        if error_soft(1, Eb_db) > 200
+        if error_soft(1, Eb_db) >400
             N_f_sim(1, Eb_db) = j;
             break
         end
@@ -88,14 +88,10 @@ Eb_of_No_db = -1:0.1:15;
 figure(1), semilogy(Eb_of_No_db, qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) ), 'r--' );
 hold on
 
-% label
-
 % sim BER
-%plot(Eb_No_db_sim, BER_hard, 'bo-')
-%hold on
+plot(Eb_No_db_sim, BER_hard, 'kx-')
+hold on
 plot(Eb_No_db_sim, BER_soft, 'bo-')
-
-
 
 axis([0 14 0.5*10^-6 1])
 xticks(0:2:12)
@@ -104,15 +100,16 @@ grid on
 xlabel("Eb/No"); 
 ylabel('BER');
 
-%legend('Uncoded 4QAM BER', 'Hard Viterbi v = 2, m = 50', 'Soft Viterbi v = 2, m = 50')
+legend('Uncoded 4QAM BER', 'Hard Viterbi v = 2, m = 50', 'Soft Viterbi v = 2, m = 50')
 %legend('Uncoded 4QAM BER', 'Hard Viterbi v = 2, m = 25', 'Soft Viterbi v = 2, m = 25')
-legend('Uncoded 4QAM BER', 'Soft Viterbi v = 2, m = 25')
+legend('Uncoded 4QAM BER', 'Soft Viterbi v = 2, m = 50')
 
 %%
+close all
 Eb_of_No_db = -1:0.1:15;
 figure(2)
 % theorical FER
-semilogy(Eb_of_No_db, 1- (1-qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) )).^(N_m_bit), 'r--' );
+semilogy(Eb_of_No_db, 1- (1-qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) )).^(50), 'r--' );
 hold on
 
 % sim FER
@@ -127,5 +124,5 @@ grid on
 xlabel("Eb/No"); 
 ylabel('FER');
 
-% legend('Uncoded 4QAM FER', 'Hard Viterbi v = 2, m = 25', 'Soft Viterbi v = 2, m = 25')
-legend('Uncoded 4QAM FER', 'Soft Viterbi v = 2, m = 25')
+%legend('Uncoded 4QAM FER', 'Hard Viterbi v = 2, m = 50', 'Soft Viterbi v = 2, m = 50')
+legend('Uncoded 4QAM FER', 'Soft Viterbi v = 2, m = 50')
