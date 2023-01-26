@@ -37,11 +37,10 @@ parfor Eb_db = [8 : E_bit_db]                            % Eb of No range
             break;
         end
     end
-    BER = b_error(Eb_db) / (N_f_sim * 4);        % BER calculation alog Eb
-    FER = f_error  / (N_f_sim);              % FER calculation along Eb
     Eb_of_No_dB(Eb_db) = Eb_db - 10*log10(2*(sigma_v^2));      % Eb[db] - No[db] = Eb/No [db]
 end
-
+BER = b_error / (N_f_sim * 4);        % BER calculation alog Eb
+FER = f_error  / (N_f_sim);              % FER calculation along Eb
 toc
 
 %% drawing graph
@@ -61,7 +60,6 @@ plot(Eb_of_No_dB, FER, '-ro')                       % FER
 hold on
 grid,axis([-0.2 12 0.5*10^(-6) 1]); 
 legend("Uncoded 2PAM BER", "Uncoded 2PAM FER", "Simulation BER", "Simulation FER");
-
 
 
 

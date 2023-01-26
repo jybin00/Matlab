@@ -25,7 +25,7 @@ parfor n = 1:length(EbNoVec)
     [numErrsSoft,numErrsHard,numBits] = deal(0);
     
     %while numErrsSoft < 100 && numBits < 5e6
-    while numBits < 5e6
+    while numBits < 5e3
         % Generate binary data and convert to symbols
         dataIn = randi([0 1],numSymPerFrame*k,1);
         
