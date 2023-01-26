@@ -3,7 +3,7 @@ clear      % variable clear
 close     % figure close
 tic
 
-N_frames = 400000;                             % number of symbols
+N_frames = 600000;                             % number of symbols
 E_bit_db = 21;                                          % bit energy [dB]
 b_error = zeros(E_bit_db, 1);                    % error bit array
 f_error = zeros(E_bit_db, 1);                     % error bit array
@@ -45,9 +45,19 @@ toc
 
 %% drawing graph
 close
-Eb_No = -2:0.01:12;
+Eb_No = 0 : 0.1 : 12;
 figure(1),semilogy( Eb_No, (qfunc ( sqrt(2*10.^((Eb_No)/10)) )), 'b--' );   % uncoded 2PAM BER graph
 hold on
+
+k = 1;
+theorical_fer = zeros(length(Eb_No), 1);
+for i = Eb_No
+    p = qfunc(sqrt((8/7)*10^(i/10)));
+    theorical_fer(k,1) = (1- ( (1-p)^7 + 7*p*(1-p)^6 ))*(3/7);
+    k = k + 1;
+end
+semilogy(Eb_No, theorical_fer)
+hold on 
 
 semilogy( Eb_No, 1- (1-qfunc ( sqrt(2*10.^(Eb_No/10)))).^4, 'g--' );      % uncoded 2PAM FER graph
 xlabel('Eb/No [dB]'), ylabel('FER');
