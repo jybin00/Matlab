@@ -32,8 +32,8 @@ parfor Eb_db = [8 : E_bit_db]                            % Eb of No range
             f_error(Eb_db,1) = f_error(Eb_db,1)  + 1;                 % count error frame 
         end
         if b_error(Eb_db,1) > 200
-            N_f_sim(1, Eb_db) = i;
-            disp(N_f_sim(1,Eb_db));
+            N_f_sim(Eb_db, 1) = i;
+            disp(N_f_sim(Eb_db, 1));
             break;
         end
     end
