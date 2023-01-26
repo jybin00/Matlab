@@ -3,7 +3,7 @@ clear      % variable clear
 close     % figure close
 tic
 
-N_frames = 400000;                             % number of symbols
+N_frames = 40000;                             % number of symbols
 E_bit_db = 21;                                          % bit energy [dB]
 b_error = zeros(E_bit_db, 1);                    % error bit array
 f_error = zeros(E_bit_db, 1);                     % error bit array
@@ -17,21 +17,21 @@ generated_sequnece = randsrc(N_frames, 4, [0 1]);         % #of frame X message 
 parfor Eb_db = 8 : E_bit_db                           % Eb of No range
     for i = 1 : N_frames
 
-        input = generated_sequnece(i, :);                                                               % seperate 4bits
-        code = Hamming_Enc(input');                                                                    % hamming encoding 
+        input = generated_sequnece(i, :);                                                                                   % seperate 4bits
+        code = Hamming_Enc(input');                                                                                         % hamming encoding 
         modulated_signal = Two_PAM_mod(code, (4/7)*10^(Eb_db/10));              % 2PAM modulation
         received_signal = AWGN_channel(modulated_signal, sigma_v);                  % AWGN channel 
         demodulated_signal = Two_PAM_dem(received_signal);                             % LLR demodulation
         estimation = Hamming_DEC(demodulated_signal);                                    % DEC
         %-----------------------------------------------------------------------------------
-        % estimation = Soft_decision_DEC(received_signal', (4/7)*10^(Eb_db/10));                            % soft decision
+        estimation = Soft_decision_DEC(received_signal', (4/7)*10^(Eb_db/10));                            % soft decision
 
         bit_error = nnz(input - estimation);
         b_error(Eb_db,1)  = b_error(Eb_db,1)   + bit_error;      % count error bit
         if bit_error > 0
             f_error(Eb_db,1) = f_error(Eb_db,1)  + 1;                 % count error frame 
         end
-        if b_error(Eb_db,1) > 400
+        if b_error(Eb_db,1) > 200
             N_f_sim(Eb_db, 1) = i;
             disp(N_f_sim(Eb_db, 1));
             break;
