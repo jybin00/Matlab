@@ -13,10 +13,9 @@ function result = Hamming_DEC(c)
         %disp('no error');
     
     else
-        syndrome = 2^0 * parity_chk(3) + 2^1 * parity_chk(2) + 2^2 * parity_chk(1);  % if parity error exist
-        c(syndrome) = mod(c(syndrome) + 1, 2);
+        syndrome = 2^0 * parity_chk(3) + 2^1 * parity_chk(2) + 2^2 * parity_chk(1)  % if parity error exist
+        c(syndrome) = mod(c(syndrome) + 1, 2)
         result = [c(3), c(5), c(6), c(7)];                                                                          % message bits
         %error = ['e' num2str(syndrome), ' position error occured'];
-        %disp(error);
     end
 end
