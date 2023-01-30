@@ -39,7 +39,7 @@ for yy = 1:length(Eb_N0_dB)
    cip = [cip1;cip2];
    cip = cip(:).';
 
-   s = 2*cip-1; % BPSK modulation 0 -> -1; 1 -> 0 
+   s = 2*cip-1; % BPSK modulation 0 -> -1; 1 -> 01
 
    n = 1/sqrt(2)*[randn(size(cip)) + j*randn(size(cip))]; % white gaussian noise, 0dB variance 
 

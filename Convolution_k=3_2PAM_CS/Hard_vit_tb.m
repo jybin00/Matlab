@@ -1,8 +1,8 @@
 clc
 clear
 tic
-N_m_bit = 25;                                                    % Number of message bit
-N_frame = 400000;                                            % Number of frame
+N_m_bit = 100;                                                    % Number of message bit
+N_frame = 40000;                                            % Number of frame
 test_bit = randsrc(N_frame, N_m_bit, [0 1]);       % test bit generation
 
 Eb_No_db = [0:1:10]';
@@ -27,7 +27,7 @@ parfor i = 1: length(Eb_No_db)                    % Eb를 바꿔가면서 계산
         modulated_output = 2*encoded_input - 1;      % 2PAM or BPSK
 
         % Signal transmitt through AWGN channel with noise variance sigma_v
-        received_signal = AWGN_Channel(modulated_output, sigma/sqrt(2));
+        received_signal = AWGN_Channel(modulated_output, sigma);
         demodulated_output = zeros(1, 2*(N_m_bit+2)); 
 
         % demodulation
@@ -54,16 +54,16 @@ end
 toc
 
 %%
-close all
+% close all
 Eb_of_No_db = -1:0.1:12;
 % theorical BER
-figure(1), semilogy(Eb_of_No_db, qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) ), 'r--' );
+figure(2), semilogy(Eb_of_No_db, qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) ), 'r--' );
 hold on
 
 % sim BER
 plot(Eb_No_db, BER, 'bo-')
 
-axis([0 12 0.8*10^-6 1])
+axis([0 10 0.8*10^-6 1])
 xticks(0:2:14)
 grid on
 
