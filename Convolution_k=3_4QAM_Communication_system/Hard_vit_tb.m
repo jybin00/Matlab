@@ -2,7 +2,7 @@ clc
 clear
 tic
 N_m_bit = 25;                                                    % Number of message bit
-N_frame = 400000;                                            % Number of frame
+N_frame = 40000;                                            % Number of frame
 test_bit = randsrc(N_frame, N_m_bit, [0 1]);       % test bit generation
 
 
@@ -51,7 +51,7 @@ parfor Eb_db = 6: Eb_db_final             % Eb를 바꿔가면서 계산
             break
         end
     end
-    Eb_No_db_sim(1, Eb_db) = Eb_db - 10*log10(sigma_v^2);
+    Eb_No_db_sim(1, Eb_db) = Eb_db - 10*log10(2*sigma_v^2);
     BER(1, Eb_db) = error(1, Eb_db) / (N_f_sim(1, Eb_db) * N_m_bit);
     FER(1, Eb_db) = FER(1, Eb_db) / N_f_sim(1, Eb_db);
 end
@@ -79,7 +79,7 @@ plot(Eb_No_db_sim, BER, 'bo-')
 % plot(Eb_No_db_sim, FER, 'bo-')
  %plot(x, y, 'ko-')
 
-axis([0 14 0.5*10^-6 1])
+axis([0 12 0.8*10^-6 1])
 xticks(0:2:14)
 grid on
 
