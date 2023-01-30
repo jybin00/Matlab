@@ -2,15 +2,15 @@ clc
 clear
 tic
 N_m_bit = 25;                                                    % Number of message bit
-N_frame = 700000;                                            % Number of frame
+N_frame = 50000;                                            % Number of frame
 test_bit = randsrc(N_frame, N_m_bit, [0 1]);       % test bit generation
 
-Eb_No_db = [0:1:10]';
+Eb_No_db = (0:10)';
 FER = zeros(1, length(Eb_No_db));
 BER = zeros(1, length(Eb_No_db));
 error = zeros(1, length(Eb_No_db));
 N_f_sim(1,1:length(Eb_No_db)) = N_frame;
-rate =1/2;
+rate = 1/2;
 k = 1;
 
 parfor i = 1: length(Eb_No_db)                    % Eb를 바꿔가면서 계산
@@ -20,16 +20,18 @@ parfor i = 1: length(Eb_No_db)                    % Eb를 바꿔가면서 계산
     sigma = sqrt(No/2);
 
     for j = 1 : N_frame                              % frame 개수만큼 계산
+        % 1~ message bit || 1+ message bit ~ 2* message bit ....
         % encoded input = (message_bit + tail bit) * 2
         input = test_bit(j, :);
         encoded_input = Convolution_code(input);  
+        demodulated_output = zeros(1, 2*(N_m_bit+2)); 
+
         encoded_input = encoded_input';
-        modulated_output = 2*encoded_input - 1;      % 2PAM or BPSK
+        encoded_input = 2*encoded_input - 1;      % 2PAM or BPSK
 
         % Signal transmitt through AWGN channel with noise variance sigma_v
         received_signal = AWGN_Channel(modulated_output, sigma);
-        demodulated_output = zeros(1, 2*(N_m_bit+2)); 
-
+       
         % demodulation
         for index = 1: 2*(N_m_bit+2)
             % ML demodulation
@@ -43,7 +45,7 @@ parfor i = 1: length(Eb_No_db)                    % Eb를 바꿔가면서 계산
             error(1, i) = error(1, i) + a;
         end
         if error(1, i) > 1000
-            N_f_sim(1, i) = j
+            N_f_sim(1, i) = j;
             break
         end
     end
@@ -60,6 +62,8 @@ Eb_of_No_db = -1:0.1:12;
 figure(1), semilogy(Eb_of_No_db, qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) ), 'r--' );
 hold on
 
+% label
+
 % sim BER
 plot(Eb_No_db, BER, 'bo-')
 
@@ -67,7 +71,6 @@ axis([0 14 0.8*10^-6 1])
 xticks(0:2:14)
 grid on
 
-% label
 xlabel("Eb/No [dB]"); 
 ylabel('BER');
 
