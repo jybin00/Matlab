@@ -21,7 +21,7 @@ generated_sequnece = randsrc(N_frames, 4, [0 1]);         % #of frame X message 
 for n = 1:length(EbNo_db)                                         % Eb of No range
     snrdB = EbNo_db(n) + 10*log10(k*rate);
     noise_Var = 10.^(-snrdB/10);
-    sigma = sqrt(noise_Var/2)
+    sigma = sqrt(noise_Var/2);
     for i = 1 : N_frames
 
         input = generated_sequnece(i, :);                                                                        % seperate 4bits
