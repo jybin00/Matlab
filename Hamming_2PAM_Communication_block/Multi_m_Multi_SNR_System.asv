@@ -3,7 +3,7 @@ clear      % variable clear
 close     % figure close
 tic
 
-N_frames = 5000000;                             % number of symbols
+N_frames = 1000000;                             % number of symbols
 EbNo_db = (0:10)';                                        % bit energy [dB]
 b_error = zeros(length(EbNo_db), 1);                   % error bit array
 b_error_h = zeros(length(EbNo_db), 1);                   % error bit array
@@ -62,47 +62,34 @@ toc
 
 %% drawing graph
 close
-Eb_No_db = -2:0.4:12;
+Eb_No_db = -2:0.1:12;
 figure(1),semilogy( Eb_No_db, (qfunc ( sqrt(2*10.^((Eb_No_db)/10)) )), 'b--' );   % uncoded 2PAM BER graph
-hold on
-k = 1;
-theorical_ber = zeros(length(Eb_No_db), 1);
-for i = Eb_No_db
-    p = qfunc(sqrt((8/7)*10^(i/10)));
-    theorical_ber(k,1) = (1- ( (1-p)^7 + 7*p*(1-p)^6 ))*(3/7);
-    k = k + 1;
-end
-semilogy(Eb_No_db, theorical_ber, '-gx')
-hold on 
-
-plot(EbNo_db, BER_h, 'ko-');                      % hard BER
-hold on
-
-plot(EbNo_db, BER, '-ro');                          % soft BER
-
-grid,axis([-0.2 12 0.8*10^(-6) 1]); 
-xlabel('Eb/No [dB]'), ylabel('BER');
-legend("Uncoded 2PAM BER", "Theoretical Hamming BER", "Hard decision BER", "Soft decision BER");
-
-%%
-close
-Eb_No_db = -2:0.5:12;
-semilogy( Eb_No_db, 1- (1-qfunc ( sqrt(2*10.^(Eb_No_db/10)))).^4, 'b--' );      % uncoded 2PAM FER graph
 hold on
 k = 1;
 theorical_fer = zeros(length(Eb_No_db), 1);
 for i = Eb_No_db
     p = qfunc(sqrt((8/7)*10^(i/10)));
-    theorical_fer(k,1) = 1- ( (1-p)^7 + 7*p*(1-p)^6 );
+    theorical_fer(k,1) = (1- ( (1-p)^7 + 7*p*(1-p)^6 ))*(3/7);
     k = k + 1;
 end
-semilogy(Eb_No_db, theorical_fer, 'gx-')
+semilogy(Eb_No_db, theorical_fer)
+hold on 
 
+plot(EbNo_db, BER_h, 'ko-');                      % hard BER
+hold on
+
+plot(EbNo_db, BER, '#7E2F8E', '-x');                          % soft BER
+
+grid,axis([-0.2 12 0.5*10^(-6) 1]); 
+legend("Uncoded 2PAM BER", "Theoretical Hamming BER", "Hard decision BER", "Soft decision BER");
+
+%%
+Eb_No_db = -2:0.01:12;
+semilogy( Eb_No_db, 1- (1-qfunc ( sqrt(2*10.^(Eb_No_db/10)))).^4, 'g--' );      % uncoded 2PAM FER graph
 xlabel('Eb/No [dB]'), ylabel('FER');
 hold on
 
-plot(EbNo_db, FER_h, '-ko')                       % FER
-plot(EbNo_db, FER, '-ro')                       % FER
+plot(EbNo_db, FER_h, '-ro')                       % FER
 
 grid,axis([-0.2 12 0.5*10^(-6) 1]); 
-legend("Uncoded 2PAM FER", "Theoretical FER", "Hard decison FER", "Soft decision FER");
+legend("Uncoded 2PAM FER", "Simulation FER");
