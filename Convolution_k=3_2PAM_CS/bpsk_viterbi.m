@@ -13,9 +13,9 @@
 % and Viterbi decoding. 
 % Convolutional code of Rate-1/2, Generator polynomial - [7,5] octal 
 % Hard decision and soft decison decoding is used. 
-
+clc
 clear
-N = 10^4 ;% number of bits or symbols
+N = 10^5 ;% number of bits or symbols
 
 Eb_N0_dB = [0:1:10]; % multiple Eb/N0 values
 Ec_N0_dB = Eb_N0_dB - 10*log10(2);
@@ -41,7 +41,8 @@ for yy = 1:length(Eb_N0_dB)
 
    s = 2*cip-1; % BPSK modulation 0 -> -1; 1 -> 1
 
-   n = 1/sqrt(2)*[randn(size(cip)) + j*randn(size(cip))]; % white gaussian noise, 0dB variance 
+   % n = 1/sqrt(2)*[randn(size(cip))  + 1i*randn(size(cip))]; % white gaussian noise, 0dB variance 
+   n = 1/sqrt(2)*randn(size(cip));
 
    % Noise addition
    y = s + 10^(-Ec_N0_dB(yy)/20)*n; % additive white gaussian noise
