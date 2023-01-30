@@ -42,5 +42,5 @@ function decoding_output = Soft_decision_DEC(received_signal, Es)
         ML_metric(j, 1) = sum(Error_Sqr(j, :));                   % ML_metric 계산. 코드에서 받은 값 빼서 제곱.
     end
     [~, min_distance] = min(ML_metric);     % 최소가 되는 index 찾기.
-    decoding_output = code_word(min_distance, [3, 5, 6, 7]);   % 찾은 index로 decoding하기.
+    decoding_output = code_word(min_distance, :);   % 찾은 index로 decoding하기.
 end

@@ -34,7 +34,7 @@ parfor n = 1:length(EbNo_db)                                         % Eb of No 
         demodulated_signal = Two_PAM_dem(received_signal);                                      % LLR demodulation
         estimation_h = Hamming_DEC(demodulated_signal);                                          % DEC
         %-----------------------------------------------------------------------------------
-        estimation_s = Soft_decision_DEC(received_signal', 1);                            % soft decision
+        estimation_s = Hamming_DEC(Soft_decision_DEC(received_signal', 1));               % soft decision
 
         bit_error_s = nnz(input - estimation_s);
         bit_error_h = nnz(input - estimation_h);
