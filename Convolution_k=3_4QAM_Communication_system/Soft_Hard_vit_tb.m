@@ -2,7 +2,7 @@ clc
 clear
 tic
 N_m_bit = 50;                                                    % Number of message bit
-N_frame = 400000;                                            % Number of frame
+N_frame = 40000;                                            % Number of frame
 test_bit = randsrc(N_frame, N_m_bit, [0 1]);       % test bit generation
 
 
@@ -43,7 +43,7 @@ parfor Eb_db = 8: Eb_db_final          % Eb를 바꿔가면서 계산
         end
 
         % Signal transmitt through AWGN channel with noise variance sigma_v
-        received_signal = AWGN_Channel(modulated_output, (sigma_v/sqrt(2)));
+        received_signal = AWGN_Channel(modulated_output, (sigma_v));
 
         % ML demodulation
         for i = 1: (N_m_bit+2)

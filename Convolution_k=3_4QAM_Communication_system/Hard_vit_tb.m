@@ -31,7 +31,7 @@ parfor Eb_db = 6: Eb_db_final             % Eb를 바꿔가면서 계산
         % modulation -> channel -> demodulation
         for i = 1: (N_m_bit+2)
             % 4QAM => 2 signal -> 1 symbol
-            modulated_output = four_QAM( encoded_input(i, :), 2*10^(Eb_db/10) );
+            modulated_output = four_QAM( encoded_input(i, :), 10^(Eb_db/10) );
 
             % Signal transmitt through AWGN channel with noise variance sigma_v
             received_signal = AWGN_Channel(modulated_output, sigma_v/sqrt(2));
@@ -44,7 +44,7 @@ parfor Eb_db = 6: Eb_db_final             % Eb를 바꿔가면서 계산
         a = nnz(input-decoding);
         if a > 0
             FER(1, Eb_db)= FER(1, Eb_db) + 1;
-            error(1, Eb_db) = error(1, Eb_db) + a
+            error(1, Eb_db) = error(1, Eb_db) + a;
         end
         if error(1, Eb_db) > 200
             N_f_sim(1, Eb_db) = j;
@@ -60,7 +60,7 @@ toc
 
 %%
 close all
-Eb_of_No_db = -1:0.1:15;
+Eb_of_No_db = -1:0.1:12;
 % theorical BER
 figure(1), semilogy(Eb_of_No_db, qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) ), 'r--' );
 hold on
@@ -90,7 +90,7 @@ ylabel('BER');
 legend('Uncoded 4QAM BER', 'Hard Viterbi v = 2, m = 25', 'Hard Viterbi v = 2, m = 50')
 %%
 close all
-Eb_of_No_db = 0:0.1:14;
+Eb_of_No_db = 0:0.1:12;
 figure(2)
 % theorical FER
 semilogy(Eb_of_No_db, 1- (1-qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) )).^(N_m_bit), 'r--' );

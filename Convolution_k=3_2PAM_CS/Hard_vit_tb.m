@@ -27,7 +27,7 @@ parfor i = 1: length(Eb_No_db)                    % Eb를 바꿔가면서 계산
         modulated_output = 2*encoded_input - 1;      % 2PAM or BPSK
 
         % Signal transmitt through AWGN channel with noise variance sigma_v
-        received_signal = AWGN_Channel(modulated_output, sigma);
+        received_signal = AWGN_Channel(modulated_output, sigma/sqrt(2));
         demodulated_output = zeros(1, 2*(N_m_bit+2)); 
 
         % demodulation
