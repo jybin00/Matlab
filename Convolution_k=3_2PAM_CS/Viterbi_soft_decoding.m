@@ -1,20 +1,20 @@
 % Viterbi decoding
-% Convolution code는 다음과 같음. (3, [8, 5]) = (7, [111], [101])
+% Convolution code는 다음과 같음. (3, [7, 5]) = (7, [111], [101])
 
 function decoded_output = Viterbi_soft_decoding(received_signal, num_message_bit, Es)  
     tail_bit = 2;
     decoded_output = zeros(1, num_message_bit + tail_bit);  % demodulated_bit + 2bit(tail bits)
 %---------------------------------------------------------------------------------
     % branch metric 계산을 위해서 각 state가 0과 1이 입력으로 들어왔을 때 어떤 출력을 하는지 미리 계산
-    output_zero =  [sqrt(Es/2) sqrt(Es/2);  -sqrt(Es/2) -sqrt(Es/2);
-                            sqrt(Es/2) -sqrt(Es/2);  -sqrt(Es/2) sqrt(Es/2)];
+    output_zero =  [-sqrt(Es) -sqrt(Es);  sqrt(Es) sqrt(Es);
+                    sqrt(Es) -sqrt(Es);  -sqrt(Es) sqrt(Es)];
      
     % 1이 입력으로 들어왔을 때 p1, p2
 
-    output_one =  [-sqrt(Es/2) -sqrt(Es/2);  sqrt(Es/2) sqrt(Es/2);	
-                            -sqrt(Es/2) sqrt(Es/2);	sqrt(Es/2) -sqrt(Es/2)]; 
-    % input을 두개씩 끊어서 codeword 구성
-    codeword = received_signal';
+    output_one =  [sqrt(Es) sqrt(Es);  -sqrt(Es) -sqrt(Es);	
+                   -sqrt(Es) sqrt(Es);	sqrt(Es) -sqrt(Es)]; 
+    
+    codeword = received_signal;
 %--------------------------------------------------------------------------------------
     Path_metric = inf(4, num_message_bit+2 + 1);                         % 4 X num_message_bit + 2 + 1 Path metric 저장 위한 matrix
     Message_bit = inf(4, num_message_bit + 2 + 1);                      % path message array

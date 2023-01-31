@@ -5,19 +5,16 @@ N_m_bit = 100;                                                    % Number of me
 N_frame = 40000;                                            % Number of frame
 test_bit = randsrc(N_frame, N_m_bit, [0 1]);       % test bit generation
 
-Eb_No_db = [0:1:10]';
-FER = zeros(1, length(Eb_No_db));
-BER = zeros(1, length(Eb_No_db));
-error = zeros(1, length(Eb_No_db));
-N_f_sim(1,1:length(Eb_No_db)) = N_frame;
-rate =1/2;
-k = 1;
+Eb_No_dB = [0:1:10]';
+SNR_dB = Eb_No_dB - 10*log10(2);
+FER = zeros(1, length(Eb_No_dB));
+BER = zeros(1, length(Eb_No_dB));
+error = zeros(1, length(Eb_No_dB));
+N_f_sim(1,1:length(Eb_No_dB)) = N_frame;
 
-parfor i = 1: length(Eb_No_db)                    % Eb를 바꿔가면서 계산
+parfor i = 1: length(Eb_No_dB)                    % Eb를 바꿔가면서 계산
     
-    SNR_db = Eb_No_db(i) + 10*log10(k * rate);
-    No = 10^(-SNR_db/10);
-    sigma = sqrt(No/2);
+    sigma = sqrt(10^(-Eb_No_dB(i)/10));
 
     for j = 1 : N_frame                              % frame 개수만큼 계산
         % encoded input = (message_bit + tail bit) * 2
@@ -43,7 +40,7 @@ parfor i = 1: length(Eb_No_db)                    % Eb를 바꿔가면서 계산
             error(1, i) = error(1, i) + a;
         end
         if error(1, i) > 1000
-            N_f_sim(1, i) = j
+            N_f_sim(1, i) = j;
             break
         end
     end
@@ -54,14 +51,14 @@ end
 toc
 
 %%
-% close all
+close all
 Eb_of_No_db = -1:0.1:12;
 % theorical BER
-figure(2), semilogy(Eb_of_No_db, qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) ), 'r--' );
+figure(1), semilogy(Eb_of_No_db, qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) ), 'r--' );
 hold on
 
 % sim BER
-plot(Eb_No_db, BER, 'bo-')
+plot(Eb_No_dB, BER, 'bo-')
 
 axis([0 10 0.8*10^-6 1])
 xticks(0:2:14)

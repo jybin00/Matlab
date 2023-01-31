@@ -42,12 +42,12 @@ for yy = 1:length(Eb_N0_dB)
    s = 2*cip-1; % BPSK modulation 0 -> -1; 1 -> 1
 
    % n = 1/sqrt(2)*[randn(size(cip))  + 1i*randn(size(cip))]; % white gaussian noise, 0dB variance 
-   n = 1/sqrt(2)*randn(size(cip));
+   n = randn(size(cip));
 
    % Noise addition
-   y = s + 10^(-Ec_N0_dB(yy)/20)*n; % additive white gaussian noise
+   y = s + 1/sqrt(2)*10^(-Ec_N0_dB(yy)/20)*n; % additive white gaussian noise
 
-   % receiver 
+   % receiver z
    cipHard = real(y)>0; % hard decision
    cipSoft = real(y);   % soft decision
 
