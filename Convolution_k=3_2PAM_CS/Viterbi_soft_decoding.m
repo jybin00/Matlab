@@ -7,12 +7,12 @@ function decoded_output = Viterbi_soft_decoding(received_signal, num_message_bit
 %---------------------------------------------------------------------------------
     % branch metric 계산을 위해서 각 state가 0과 1이 입력으로 들어왔을 때 어떤 출력을 하는지 미리 계산
     output_zero =  [-sqrt(Es) -sqrt(Es);  sqrt(Es) sqrt(Es);
-                    sqrt(Es) -sqrt(Es);  -sqrt(Es) sqrt(Es)];
+                             sqrt(Es) -sqrt(Es);  -sqrt(Es) sqrt(Es)];
      
     % 1이 입력으로 들어왔을 때 p1, p2
 
     output_one =  [sqrt(Es) sqrt(Es);  -sqrt(Es) -sqrt(Es);	
-                   -sqrt(Es) sqrt(Es);	sqrt(Es) -sqrt(Es)]; 
+                           -sqrt(Es) sqrt(Es);	sqrt(Es) -sqrt(Es)]; 
     
     codeword = received_signal;
 %--------------------------------------------------------------------------------------
