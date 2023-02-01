@@ -126,9 +126,11 @@ function decoded_output = Viterbi_decoding(demodulated_output, num_message_bit)
         if I == 1  % 앞에 꺼!
             decoded_output(1,t) = Message_bit(current_state+1, t);
             current_state = prev_back_state0 - 1;
-        else
+            fprintf('%d ',current_state+1)            
+        elseif I == 2
             decoded_output(1,t) = Message_bit(current_state+1, t);
             current_state = prev_back_state1 - 1;
+            fprintf('%d ',current_state+1) 
         end
     end
     decoded_output = decoded_output(1:num_message_bit);

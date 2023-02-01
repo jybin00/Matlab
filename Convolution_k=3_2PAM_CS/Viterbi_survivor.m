@@ -122,6 +122,7 @@ function decoded_output = Viterbi_survivor(demodulated_output, num_message_bit)
     for t = num_message_bit + tail_bit :-1 : 1
         decoded_output(1,t) = Message_bit(current_state, t);
         current_state = Survivor_path(current_state, t);
+        fprintf('%d ',current_state)
     end
     decoded_output = decoded_output(1:num_message_bit);
 end
