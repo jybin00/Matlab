@@ -16,7 +16,7 @@ trellis = poly2trellis(3, [7 5]);
 tbl = 36;
 rate = 1/2;
 
-parfor n = 1:length(EbNoVec)
+for n = 1:length(EbNoVec)
     % Convert Eb/No to SNR
     snrdB = EbNoVec(n) + 10*log10(k*rate);
     % Noise variance calculation for unity average signal power
@@ -30,7 +30,7 @@ parfor n = 1:length(EbNoVec)
         dataIn = randi([0 1],numSymPerFrame*k,1);
         
         % Convolutionally encode the data
-        dataEnc = convenc(dataIn,trellis);
+        dataEnc = convenc(dataIn,trellis)
         
         % QAM modulate
         txSig = qammod(dataEnc,M, ...

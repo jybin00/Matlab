@@ -1,7 +1,7 @@
 clc
 clear
 tic
-N_m_bit = 100;                                                    % Number of message bit
+N_m_bit = 10;                                                    % Number of message bit
 N_frame = 40000;                                            % Number of frame
 test_bit = randsrc(N_frame, N_m_bit, [0 1]);       % test bit generation
 
@@ -12,14 +12,14 @@ BER = zeros(1, length(Eb_No_dB));
 error = zeros(1, length(Eb_No_dB));
 N_f_sim(1,1:length(Eb_No_dB)) = N_frame;
 
-parfor i = 1: length(Eb_No_dB)                    % Eb를 바꿔가면서 계산
+for i = 1: length(Eb_No_dB)                    % Eb를 바꿔가면서 계산
     
     sigma = sqrt(10^(-Eb_No_dB(i)/10));
 
     for j = 1 : N_frame                              % frame 개수만큼 계산
         % encoded input = (message_bit + tail bit) * 2
         input = test_bit(j, :);
-        encoded_input = Convolution_code(input);  
+        encoded_input = Convolution_code(input);
         encoded_input = encoded_input';
         modulated_output = 2*encoded_input - 1;      % 2PAM or BPSK
 
@@ -50,7 +50,6 @@ end
 % FER = FER / N_frame;
 toc
 
-%%
 close all
 Eb_of_No_db = -1:0.1:12;
 % theorical BER

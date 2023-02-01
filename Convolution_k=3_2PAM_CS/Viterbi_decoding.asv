@@ -28,25 +28,25 @@ function decoded_output = Viterbi_decoding(demodulated_output, num_message_bit)
                 if Current_state < 2                                                  % 입력 0을 받아서 현재 값이 되었는가?
                     BM_zero = nnz(output_zero(Prev_state_zero, :) - codeword(t-1,:));  % 끝자리가 0인 코드에 0이 들어왔을 때 outputd으로 BM 계산
                     BM_one  = nnz(output_zero(Prev_state_one, :) - codeword(t-1, :));  % 끝자리가 1인 코드에 0이 들어왔을 때
-                    [Path_metric(1+Current_state, t), I] = min([Path_metric(Prev_state_zero, t-1) + BM_zero, ...
-                                                                                     Path_metric(Prev_state_one, t-1) + BM_one]);
+                    [Path_metric(1+Current_state, t), I] = min(Path_metric(Prev_state_zero, t-1) + BM_zero, ...
+                                                                                     Path_metric(Prev_state_one, t-1) + BM_one);
                     Message_bit(1+Current_state, t) = 0;
-                    if I > 1
-                        Survivor_path(1+Current_state, t) = Prev_state_one;                        
-                    else
+                    if I > 0
                         Survivor_path(1+Current_state, t) = Prev_state_zero;
-                    end              
+                    else
+                        Survivor_path(1+Current_state, t) = Prev_state_one;
+                    end
                 else	                                                              % 입력 1을 받아서 현재 값이 되었는가?
                     BM_zero = nnz(output_one(Prev_state_zero, :) - codeword(t-1, :));
                     BM_one  = nnz(output_one(Prev_state_one, :) - codeword(t-1, :));
-                    [Path_metric(1+Current_state, t), I] = min([Path_metric(Prev_state_zero, t-1) + BM_zero, ...
-                                                                                     Path_metric(Prev_state_one, t-1) + BM_one]);
+                    [Path_metric(1+Current_state, t), I] = min(Path_metric(Prev_state_zero, t-1) + BM_zero, ...
+                                                                                     Path_metric(Prev_state_one, t-1) + BM_one);
                     Message_bit(1+Current_state, t) = 1;
-                    if I > 1
-                        Survivor_path(1+Current_state, t) = Prev_state_one;                        
-                    else
+                    if I > 0
                         Survivor_path(1+Current_state, t) = Prev_state_zero;
-                    end              
+                    else
+                        Survivor_path(1+Current_state, t) = Prev_state_one;
+                    end
                 end
             end
         elseif t > num_message_bit + 1	       % 마지막 2 state는 접히는 시간
@@ -59,25 +59,15 @@ function decoded_output = Viterbi_decoding(demodulated_output, num_message_bit)
                 if Current_state < 2                                                     % 입력 0을 받아서 현재 값이 되었는가?
                     BM_zero = nnz(output_zero(Prev_state_zero, :) - codeword(t-1, :));
                     BM_one  = nnz(output_zero(Prev_state_one, :) - codeword(t-1, :));
-                    [Path_metric(j, t), I] = min([Path_metric(Prev_state_zero, t-1) + BM_zero, ...
-                                                             Path_metric(Prev_state_one, t-1) + BM_one]);
+                    Path_metric(j, t) = min(Path_metric(Prev_state_zero, t-1) + BM_zero, ...
+                        Path_metric(Prev_state_one, t-1) + BM_one);
                     Message_bit(j, t) = 0;
-                    if I > 1
-                        Survivor_path(1+Current_state, t) = Prev_state_one;                        
-                    else
-                        Survivor_path(1+Current_state, t) = Prev_state_zero;
-                    end                               
                 else                                                                    % 입력 1을 받아서 현재 값이 되었는가?
                     BM_zero = nnz(output_one(Prev_state_zero, :) - codeword(t-1, :));
                     BM_one  = nnz(output_one(Prev_state_one, :) - codeword(t-1, :));
-                    [Path_metric(j, t), I] = min([Path_metric(Prev_state_zero, t-1) + BM_zero, ...
-                                                             Path_metric(Prev_state_one, t-1) + BM_one]);
+                    Path_metric(j, t) = min(Path_metric(Prev_state_one, t-1) + BM_one, ...
+                        Path_metric(Prev_state_zero, t-1) + BM_zero);
                     Message_bit(j, t) = 1;
-                    if I > 1
-                        Survivor_path(1+Current_state, t) = Prev_state_one;                        
-                    else
-                        Survivor_path(1+Current_state, t) = Prev_state_zero;
-                    end                    
                 end
             end
         else
@@ -90,26 +80,15 @@ function decoded_output = Viterbi_decoding(demodulated_output, num_message_bit)
                 if Current_state < 2    % 입력 0을 받아서 현재 값이 되었는가?
                     BM_zero = nnz(output_zero(Prev_state_zero, :) - codeword(t-1, :));
                     BM_one  = nnz(output_zero(Prev_state_one, :) - codeword(t-1, :));
-                    [Path_metric(j, t), I] = min([Path_metric(Prev_state_zero, t-1) + BM_zero, ...
-                                                       Path_metric(Prev_state_one, t-1) + BM_one]);
+                    Path_metric(j, t) = min(Path_metric(Prev_state_zero, t-1) + BM_zero, ...
+                                                       Path_metric(Prev_state_one, t-1) + BM_one);
                     Message_bit(j, t) = 0;
-                    if I > 1
-                        Survivor_path(1+Current_state, t) = Prev_state_one;                        
-                    else
-                        Survivor_path(1+Current_state, t) = Prev_state_zero;
-                    end
-
                 else                            % 입력 1을 받아서 현재 값이 되었는가?
                     BM_zero = nnz(output_one(Prev_state_zero, :) - codeword(t-1, :));
                     BM_one  = nnz(output_one(Prev_state_one, :) - codeword(t-1, :));
-                    [Path_metric(j, t), I] = min([Path_metric(Prev_state_zero, t-1) + BM_zero, ...
-                                                        Path_metric(Prev_state_one, t-1) + BM_one]);
+                    Path_metric(j, t) = min(Path_metric(Prev_state_zero, t-1) + BM_zero, ...
+                                                        Path_metric(Prev_state_one, t-1) + BM_one);
                     Message_bit(j, t) = 1;
-                    if I > 1
-                        Survivor_path(1+Current_state, t) = Prev_state_one;                        
-                    else
-                        Survivor_path(1+Current_state, t) = Prev_state_zero;
-                    end    
                 end
             end
         end
