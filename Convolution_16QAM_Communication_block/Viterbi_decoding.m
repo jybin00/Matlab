@@ -38,12 +38,12 @@ function decoded_output = Viterbi_decoding(demodulated_output, num_message_bit)
             Path_metric(1, 1) = 0;	                                                      % 맨 처음 state
         elseif t > 1 && t <= tail_bit                                                             % t = 2~6 까지는 state가 펼쳐지는 시간
             for j = 1 : 2^(t-1)
-                Current_path = (nstate/2^(t-1))*(j-1);                                 % ex) current_path   = [0 0 1 1 0 0]
-                Prev_state_zero = mod(2*Current_path, nstate)+1;              % prev_path_from 0 = [0 1 1 0 0 0] 끝자리 0
-                Prev_state_one  = mod(2*Current_path + 1, nstate) +1;       % prev_path_from 1 = [0 1 1 0 0 1] 끝자리 1
+                Current_state = (nstate/2^(t-1))*(j-1);                                 % ex) current_path   = [0 0 1 1 0 0]
+                Prev_state_zero = mod(2*Current_state, nstate)+1;              % prev_path_from 0 = [0 1 1 0 0 0] 끝자리 0
+                Prev_state_one  = mod(2*Current_state + 1, nstate) +1;       % prev_path_from 1 = [0 1 1 0 0 1] 끝자리 1
 
                 % BM = min{ 끝자리 0에서 온 PM + BM, 끝자리 1에서 온 PM + BM}
-                if Current_path < nstate/2                                                      % 입력 0을 받아서 현재 값이 되었는가?
+                if Current_state < nstate/2                                                      % 입력 0을 받아서 현재 값이 되었는가?
                     BM_zero = nnz(output_zero(Prev_state_zero, :) - codeword(t-1,:));  % 끝자리가 0인 코드에 0이 들어왔을 때 outputd으로 BM 계산
                     BM_one  = nnz(output_zero(Prev_state_one, :) - codeword(t-1, :));  % 끝자리가 1인 코드에 0이 들어왔을 때
                     [Path_metric(1+Current_state, t), I] = min([Path_metric(Prev_state_zero, t-1) + BM_zero, ...
@@ -69,12 +69,12 @@ function decoded_output = Viterbi_decoding(demodulated_output, num_message_bit)
             end
         elseif t > num_message_bit + 1	       % 마지막 t = 98~103는 state가 접히는 시간
             for j = 1 : 2^(num_message_bit + 6 + 1 -t)			
-                Current_path = j-1;                                                      % ex) current_path   = [0 0 1 1 0 0]
-                Prev_state_zero = mod(2*Current_path, 64)+1;             % prev_path_from 0 = [0 1 1 0 0 0] 끝자리 0
-                Prev_state_one  = mod(2*Current_path + 1, 64) +1;      % prev_path_from 1 = [0 1 1 0 0 1] 끝자리 1
+                Current_state = j-1;                                                      % ex) current_path   = [0 0 1 1 0 0]
+                Prev_state_zero = mod(2*Current_state, 64)+1;             % prev_path_from 0 = [0 1 1 0 0 0] 끝자리 0
+                Prev_state_one  = mod(2*Current_state + 1, 64) +1;      % prev_path_from 1 = [0 1 1 0 0 1] 끝자리 1
 
                 % BM = min{ 끝자리 0에서 온 PM + BM, 끝자리 1에서 온 PM + BM}
-                if Current_path < nstate/2                                                  % 입력 0을 받아서 현재 값이 되었는가?
+                if Current_state < nstate/2                                                  % 입력 0을 받아서 현재 값이 되었는가?
                     BM_zero = nnz(output_zero(Prev_state_zero, :) - codeword(t-1, :));
                     BM_one  = nnz(output_zero(Prev_state_one, :) - codeword(t-1, :));
                     [Path_metric(j, t), I] = min([Path_metric(Prev_state_zero, t-1) + BM_zero, ...
@@ -100,9 +100,9 @@ function decoded_output = Viterbi_decoding(demodulated_output, num_message_bit)
             end
         else
             for j = 1 : nstate
-                Current_path = j-1;                                                        % ex) current_path   = [0 0 1 1 0 0]
-                Prev_state_zero = mod(2*Current_path, nstate)+1;               % prev_path_from 0 = [0 1 1 0 0 0] 끝자리 0
-                Prev_state_one  = mod(2*Current_path + 1, nstate) +1;        % prev_path_from 1 = [0 1 1 0 0 1] 끝자리 1
+                Current_state = j-1;                                                        % ex) current_path   = [0 0 1 1 0 0]
+                Prev_state_zero = mod(2*Current_state, nstate)+1;               % prev_path_from 0 = [0 1 1 0 0 0] 끝자리 0
+                Prev_state_one  = mod(2*Current_state + 1, nstate) +1;        % prev_path_from 1 = [0 1 1 0 0 1] 끝자리 1
 
                 % BM = min{ 끝자리 0에서 온 PM + BM, 끝자리 1에서 온 PM + BM}
                 if Current_state < 2    % 입력 0을 받아서 현재 값이 되었는가?
