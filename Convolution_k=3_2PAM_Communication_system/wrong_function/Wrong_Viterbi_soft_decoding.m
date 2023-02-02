@@ -1,7 +1,7 @@
 % Viterbi decoding
 % Convolution code는 다음과 같음. (3, [7, 5]) = (7, [111], [101])
 
-function decoded_output = Viterbi_soft_decoding(received_signal, num_message_bit, Es)  
+function decoded_output = Wrong_Viterbi_soft_decoding(received_signal, num_message_bit, Es)  
     tail_bit = 2;
     decoded_output = zeros(1, num_message_bit + tail_bit);  % demodulated_bit + 2bit(tail bits)
 %---------------------------------------------------------------------------------

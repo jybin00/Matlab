@@ -38,7 +38,7 @@ parfor Eb_db = 8: Eb_db_final          % Eb를 바꿔가면서 계산
         received_signal = AWGN_Channel(modulated_output, (sigma_v/sqrt(2)));
         received_signal= [real(received_signal); imag(received_signal)];
 
-        decoding = Viterbi_soft_decoding(received_signal, N_m_bit, 10^(Eb_db/10));
+        decoding = Wrong_Viterbi_soft_decoding(received_signal, N_m_bit, 10^(Eb_db/10));
         a = nnz(input-decoding);
         if a > 0
             FER(1, Eb_db)= FER(1, Eb_db) + 1;

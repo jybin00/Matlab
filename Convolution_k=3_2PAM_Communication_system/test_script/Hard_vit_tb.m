@@ -33,7 +33,7 @@ for i = 1: length(Eb_No_dB)                    % Eb를 바꿔가면서 계산
             demodulated_output(1, index)=Demodulation(received_signal(index));
         end
 
-        decoding = Viterbi_decoding(demodulated_output, N_m_bit);
+        decoding = Wrong_Viterbi_decoding(demodulated_output, N_m_bit);
         a = nnz(input-decoding);
         if a > 0
             FER(1, i)= FER(1, i) + 1;

@@ -51,8 +51,8 @@ parfor Eb_db = 8: Eb_db_final          % Eb를 바꿔가면서 계산
         end
 
         received_signal= [real(received_signal); imag(received_signal)];
-        decoding_soft = Viterbi_soft_decoding(received_signal, N_m_bit, 10^(Eb_db/10));
-        decoding_hard = Viterbi_decoding(demodulated_output, N_m_bit);
+        decoding_soft = Wrong_Viterbi_soft_decoding(received_signal, N_m_bit, 10^(Eb_db/10));
+        decoding_hard = Wrong_Viterbi_decoding(demodulated_output, N_m_bit);
 
         error_s = nnz(input-decoding_soft);
         error_h = nnz(input-decoding_hard);
