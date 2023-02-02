@@ -105,23 +105,23 @@ legend('Uncoded 2PAM BER', 'Hard Viterbi v = 2, m = 50', 'Soft Viterbi v = 2, m 
 %%
 
 close all
-Eb_of_No_db = -1:0.1:12;
+Eb_of_No_db = -1:0.1:15;
 figure(2)
 % theorical FER
 semilogy(Eb_of_No_db, 1- (1-qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) )).^(50), 'r--' );
 hold on
 
 % sim FER
-plot(Eb_No_dB, FER_hard, 'kx-')
+plot(Eb_No_dB, FER_hard, 'bo-')
 hold on
 plot(Eb_No_dB, FER_soft, 'bo-')
 
-axis([0 12 10^-5 10])
+axis([0 14 10^-5 10])
 xticks([0:2:12])
 grid on
 
 xlabel("Eb/No"); 
 ylabel('FER');
 
-legend('Uncoded 2PAM FER', 'Hard Viterbi v = 2, m = 50', 'Soft Viterbi v = 2, m = 50')
-% legend('Uncoded 4QAM FER', 'Soft Viterbi v = 2, m = 50')
+%legend('Uncoded 4QAM FER', 'Hard Viterbi v = 2, m = 50', 'Soft Viterbi v = 2, m = 50')
+legend('Uncoded 4QAM FER', 'Soft Viterbi v = 2, m = 50')
