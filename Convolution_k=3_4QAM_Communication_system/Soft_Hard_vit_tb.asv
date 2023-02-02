@@ -2,12 +2,12 @@ clc
 clear
 tic
 N_m_bit = 50;                                                    % Number of message bit
-N_frame = 4000;                                            % Number of frame
+N_frame = 40000;                                            % Number of frame
 test_bit = randsrc(N_frame, N_m_bit, [0 1]);       % test bit generation
 
 
 Eb_No_dB = (0:10)';
-Es_No_dB = Eb_No_dB + 10*log10(1/2);
+Es_No_dB = Eb_No_dB + 10*log10(1/2*2);
 FER_soft = zeros(1, length(Eb_No_dB));
 FER_hard = zeros(1, length(Eb_No_dB));
 
@@ -22,9 +22,10 @@ sigma_v = 2;
 demodulated_output = zeros(1, 2*(N_m_bit+2));
 
 
-for n = 1: length(Eb_No_dB)       % Eb를 바꿔가면서 계산
+parfor n = 1: length(Eb_No_dB)       % Eb를 바꿔가면서 계산
     No = 10^(-Es_No_dB(n)/10);
     sigma = sqrt(No/2);
+    disp(n)
 
     for j = 1 : N_frame                       % frame 개수만큼 계산
 
@@ -67,7 +68,7 @@ for n = 1: length(Eb_No_dB)       % Eb를 바꿔가면서 계산
             error_hard(1, n) = error_hard(1, n) + error_h;
         end
 
-        if error_soft(1, n) >400
+        if error_soft(1, n) >1000
             N_f_sim(1, n) = j;
             break
         end
@@ -92,16 +93,16 @@ plot(Eb_No_dB, BER_hard, 'kx-')
 hold on
 plot(Eb_No_dB, BER_soft, 'bo-')
 
-axis([0 12 0.5*10^-6 1])
+axis([0 12 10^-5 1])
 xticks(0:2:12)
 grid on
 
-xlabel("Eb/No"); 
+xlabel("Eb/No (dB)"); 
 ylabel('BER');
 
 legend('Uncoded 4QAM BER', 'Hard Viterbi v = 2, m = 50', 'Soft Viterbi v = 2, m = 50')
 %legend('Uncoded 4QAM BER', 'Hard Viterbi v = 2, m = 25', 'Soft Viterbi v = 2, m = 25')
-legend('Uncoded 4QAM BER', 'Soft Viterbi v = 2, m = 50')
+% legend('Uncoded 4QAM BER', 'Soft Viterbi v = 2, m = 50')
 
 %%
 close all

@@ -25,7 +25,7 @@ demodulated_output = zeros(1, 2*(N_m_bit+2));
 parfor n = 1: length(Eb_No_dB)       % Eb를 바꿔가면서 계산
     No = 10^(-Es_No_dB(n)/10);
     sigma = sqrt(No/2);
-    disp(n)
+    fprintf("%d 시작", n);
 
     for j = 1 : N_frame                       % frame 개수만큼 계산
 
@@ -68,7 +68,7 @@ parfor n = 1: length(Eb_No_dB)       % Eb를 바꿔가면서 계산
             error_hard(1, n) = error_hard(1, n) + error_h;
         end
 
-        if error_soft(1, n) >400
+        if error_soft(1, n) >1000
             N_f_sim(1, n) = j;
             break
         end
@@ -79,6 +79,7 @@ parfor n = 1: length(Eb_No_dB)       % Eb를 바꿔가면서 계산
 
     FER_soft(1, n) = FER_soft(1, n) / N_f_sim(1, n);
     FER_hard(1, n) = FER_hard(1, n) / N_f_sim(1, n);
+    fprintf("%d 끝", n);
 end
 toc
 
@@ -93,11 +94,11 @@ plot(Eb_No_dB, BER_hard, 'kx-')
 hold on
 plot(Eb_No_dB, BER_soft, 'bo-')
 
-axis([0 12 0.5*10^-6 1])
+axis([0 12 10^-5 1])
 xticks(0:2:12)
 grid on
 
-xlabel("Eb/No"); 
+xlabel("Eb/No (dB)"); 
 ylabel('BER');
 
 legend('Uncoded 4QAM BER', 'Hard Viterbi v = 2, m = 50', 'Soft Viterbi v = 2, m = 50')
