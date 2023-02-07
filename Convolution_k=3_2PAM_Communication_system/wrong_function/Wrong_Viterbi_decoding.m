@@ -116,22 +116,25 @@ function decoded_output = Wrong_Viterbi_decoding(demodulated_output, num_message
     end
 %----------------------------------------------------------------------------------
 % back tracing
-    current_state = 0;                                              % 맨 마지막 state = [0 0]
+    current_state = 00;                                              % 맨 마지막 state = [0 0]
+    %fprintf('%d  ',current_state+1) 
     Message_bit = Message_bit(:, 2:end);  % Message matrix 한 칸 당기기.
-    for t = num_message_bit + tail_bit :-1 : 1
+    for t = num_message_bit + tail_bit + 1 :-1 : 2
         prev_back_state0 = mod(2*current_state, 4)+1;  
         prev_back_state1 = mod(2*current_state + 1, 4) +1;
-        [~, I] = min([Path_metric(prev_back_state0, t), ...
-                           Path_metric(prev_back_state1, t)]);
+        [~, I] = min([Path_metric(prev_back_state0, t-1), ...
+                           Path_metric(prev_back_state1, t-1)]);
         if I == 1  % 앞에 꺼!
-            decoded_output(1,t) = Message_bit(current_state+1, t);
+            decoded_output(1,t-1) = Message_bit(current_state+1, t-1);
             current_state = prev_back_state0 - 1;
-            fprintf('%d ',current_state+1)            
+            % fprintf('%d  ',current_state+1)     
         elseif I == 2
-            decoded_output(1,t) = Message_bit(current_state+1, t);
+            decoded_output(1,t-1) = Message_bit(current_state+1, t-1);
             current_state = prev_back_state1 - 1;
-            fprintf('%d ',current_state+1) 
+            % fprintf('%d  ',current_state+1) ;
         end
     end
+    % disp('\n')
+    % disp(fliplr(Path_metric));
     decoded_output = decoded_output(1:num_message_bit);
 end

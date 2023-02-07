@@ -117,16 +117,16 @@ function decoded_output = Viterbi_decoding(demodulated_output, num_message_bit)
 %----------------------------------------------------------------------------------
 % back tracing
     current_state = 00 + 1;                                              % 맨 마지막 state = [0 0]
-    fprintf('%d  ',current_state) 
+    %fprintf('%d  ',current_state) 
     Survivor_path = Survivor_path(:,2:end);
     Message_bit = Message_bit(:, 2:end);
     for t = num_message_bit + tail_bit :-1 : 1
         decoded_output(1,t) = Message_bit(current_state, t);
         current_state = Survivor_path(current_state, t);
-        fprintf('%d  ',current_state)
+        %fprintf('%d  ',current_state)
     end
-    disp('\n')
-    disp(fliplr(Path_metric));
-    disp(fliplr(Survivor_path));
+    %disp('\n')
+    %disp(fliplr(Path_metric));
+    %disp(fliplr(Survivor_path));
     decoded_output = decoded_output(1:num_message_bit);
 end

@@ -2,7 +2,7 @@ clc
 clear
 tic
 N_m_bit = 50;                                                 % Number of message bit
-N_frame = 4000;                                             % Number of frame
+N_frame = 20000;                                             % Number of frame
 test_bit = randsrc(N_frame, N_m_bit, [0 1]);     % test bit generation
 
 
@@ -21,7 +21,7 @@ N_f_sim(1,1:length(Eb_No_dB)) = N_frame;
 demodulated_output = zeros(1, 2*(N_m_bit+2));
 
 
-for n = 1 : length(Eb_No_dB)         % Eb를 바꿔가면서 계산
+parfor n = 1 : length(Eb_No_dB)         % Eb를 바꿔가면서 계산
     disp(n)                                      % 진행상황 확인을 위한 인덱스
     No = 10^(-Es_No_dB(n)/10);
     sigma = sqrt(No/2);
@@ -51,8 +51,8 @@ for n = 1 : length(Eb_No_dB)         % Eb를 바꿔가면서 계산
         
         decoding_input = reshape(received_signal, [2, length(received_signal)/2]);
         decoding_input = decoding_input';
-        decoding_soft = Viterbi_soft_decoding(decoding_input, N_m_bit, 1);
-        decoding_hard = Viterbi_decoding(demodulated_output, N_m_bit);
+        decoding_soft = Viterbi_decoding(demodulated_output, N_m_bit);
+        decoding_hard = Wrong_Viterbi_decoding(demodulated_output, N_m_bit);
 
         error_s = nnz(input-decoding_soft);
         error_h = nnz(input-decoding_hard);
@@ -65,7 +65,7 @@ for n = 1 : length(Eb_No_dB)         % Eb를 바꿔가면서 계산
             error_hard(1, n) = error_hard(1, n) + error_h;
         end
 
-        if error_soft(1, n) > 1000
+        if error_soft(1, n) > 10000
             N_f_sim(1, n) = j;
             disp(j)
             break
@@ -99,7 +99,7 @@ grid on
 xlabel("Eb/No"); 
 ylabel('BER');
 
-legend('Uncoded 2PAM BER', 'Hard Viterbi v = 2, m = 50', 'Soft Viterbi v = 2, m = 50')
+legend('Uncoded 2PAM BER', 'Hard wrong Viterbi v = 2, m = 50', 'Hard correct Viterbi v = 2, m = 50')
 % legend('Uncoded 2PAM BER', 'Hard Viterbi v = 2, m = 25', 'Soft Viterbi v = 2, m = 25')
 
 %%

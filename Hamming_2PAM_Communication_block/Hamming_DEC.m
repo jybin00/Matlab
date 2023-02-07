@@ -6,7 +6,7 @@ function result = Hamming_DEC(c)
             0 1 1 0 0 1 1;
             1 0 1 0 1 0 1];
 
-    parity_chk = mod(H*c, 2);              % mod operation bc it's binary
+    parity_chk = mod(H*c, 2)              % mod operation bc it's binary
     
     if parity_chk == [0 0 0]                  % no parity error 
         result = [c(3), c(5), c(6), c(7)];
