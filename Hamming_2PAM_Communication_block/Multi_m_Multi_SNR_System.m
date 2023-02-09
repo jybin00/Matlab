@@ -3,7 +3,7 @@ clear      % variable clear
 close     % figure close
 tic
 
-N_frames = 5000000;                             % number of symbols
+N_frames = 10000;                             % number of symbols
 EbNo_db = (0:10)';                                        % bit energy [dB]
 b_error = zeros(length(EbNo_db), 1);                   % error bit array
 b_error_h = zeros(length(EbNo_db), 1);                   % error bit array
@@ -87,6 +87,7 @@ legend("Uncoded 2PAM BER", "Theoretical Hamming BER", "Hard decision BER", "Soft
 %%
 close
 Eb_No_db = -2:0.5:12;
+figure(2)
 semilogy( Eb_No_db, 1- (1-qfunc ( sqrt(2*10.^(Eb_No_db/10)))).^4, 'b--' );      % uncoded 2PAM FER graph
 hold on
 k = 1;
