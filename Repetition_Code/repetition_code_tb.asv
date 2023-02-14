@@ -3,6 +3,8 @@ clc
 clear
 close
 
+rng("default")
+
 eb_No_db = (0:15)';
 rate = 1/3;               % 3 repetition
 l = 1;                        % bpsk 
@@ -53,15 +55,17 @@ parfor i = 1:length(No)
     q(i,1) = integral3(fun, xmin, xmax, ymin, ymax, zmin, zmax, 'Method', 'iterated');
 end
 %%
-
+close all
 grid on
 semilogy(eb_No_db, 1-q, 'go-')
 hold on
 semilogy(eb_No_db, ber, '-bo')
 hold on
 semilogy(eb_No_db, berawgn(eb_No_db, "psk", 2, 'diff'), 'r')
-axis([0 15 10^-5 1])
-legend('Soft decision theoretical ber', 'repetition code soft decision ber', 'bpsk ber')
+hold on
+semilogy(eb_No_db, qfunc(2*10.^(eb_No_db/10)))
+axis([0 13 10^-5 1])
+legend('Soft decision theoretical ber', 'Repetition code soft decision ber', 'BPSK ber')
 
 ylabel('BER')
 xlabel('Eb/No [dB]')
