@@ -1,0 +1,21 @@
+% repetition code test bench
+
+eb_No_db = (0:10)';
+rate = 1/3;               % 3 repetition
+l = 1;                        % bpsk 
+snr_db = eb_No_db + 10*log10(rate*l);
+
+N_frame = 10000;
+message = randi([0 1], N_frame,1);
+
+for i = length(eb_No)
+    No = 10^(-snr_db(i)/10);
+    code = 2*repmat(message, 1, 3) -1;   % bpsk modulation
+    for j = 1:N_frame
+        code_k = code(j,1);
+        received_signal = awgn(code(j,1), No, 'measured');
+        [:,I] = min(sum((code_k - 1).^2), sum((cod))
+    end
+    
+
+end
