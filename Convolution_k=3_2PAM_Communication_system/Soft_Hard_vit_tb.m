@@ -51,8 +51,8 @@ parfor n = 1 : length(Eb_No_dB)         % Eb를 바꿔가면서 계산
         
         decoding_input = reshape(received_signal, [2, length(received_signal)/2]);
         decoding_input = decoding_input';
-        decoding_soft = Viterbi_decoding(demodulated_output, N_m_bit);
-        decoding_hard = Wrong_Viterbi_decoding(demodulated_output, N_m_bit);
+        decoding_soft = Viterbi_soft_decoding(decoding_input, N_m_bit, 1);
+        decoding_hard = Viterbi_decoding(demodulated_output, N_m_bit);
 
         error_s = nnz(input-decoding_soft);
         error_h = nnz(input-decoding_hard);
@@ -80,10 +80,10 @@ parfor n = 1 : length(Eb_No_dB)         % Eb를 바꿔가면서 계산
 end
 toc
 
-
+%%
 close all
 Eb_of_No_db = -1:0.1:12;
-% theorical BER
+% theorical uncoded BER
 semilogy(Eb_of_No_db, qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) ), 'r--' );
 hold on
 
@@ -99,8 +99,8 @@ grid on
 xlabel("Eb/No"); 
 ylabel('BER');
 
-legend('Uncoded 2PAM BER', 'Hard wrong Viterbi v = 2, m = 50', 'Hard correct Viterbi v = 2, m = 50')
-% legend('Uncoded 2PAM BER', 'Hard Viterbi v = 2, m = 25', 'Soft Viterbi v = 2, m = 25')
+%legend('Uncoded 2PAM BER', 'Hard wrong Viterbi v = 2, m = 50', 'Hard correct Viterbi v = 2, m = 50')
+legend('Uncoded 2PAM BER', 'Hard Viterbi v = 2, m = 25', 'Soft Viterbi v = 2, m = 25')
 
 %%
 

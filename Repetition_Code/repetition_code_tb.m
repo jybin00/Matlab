@@ -1,6 +1,5 @@
 % repetition code test bench
 clc
-clear
 close
 tic
 
@@ -8,8 +7,8 @@ tic
 
 eb_No_db = (0:15)';
 rate = 1/3;               % 3 repetition
-l = 1;                        % bpsk 
-snr_db = eb_No_db + 10*log10(rate*l);
+k = 1;                        % bpsk 
+snr_db = eb_No_db + 10*log10(rate*k);
 
 N_frame = 1000000;
 message = randi([0 1], N_frame,1);
@@ -23,7 +22,8 @@ parfor i = 1:length(eb_No_db)
     code = 2*repmat(message, 1, 3) -1;   % bpsk modulation
     for j = 1:N_frame
         code_k = code(j,:);
-        received_signal = code_k + sigma*randn(1,3);
+        % received_signal = code_k + sigma*randn(1,3);    % 이렇게 하니까 잘 되는데 왜 awgn로 하면 안되지??
+        received_signal = awgn(code_k, 3+snr_db(i))
         if sum((received_signal - 1).^2) < sum((received_signal + 1).^2)
             decoding = 1;
             if decoding == code_k(1)
