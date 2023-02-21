@@ -62,14 +62,16 @@ end
 toc
 %%
 close all
-grid on
-semilogy(eb_No_db, 1-q, 'kx-')
+
+semilogy(eb_No_db, 1-q, 'mdiamond-')
 hold on
 semilogy(eb_No_db, ber, '-bo')
 hold on
-semilogy(eb_No_db, berawgn(eb_No_db, "psk", 2, 'nondiff'), 'r')
+%semilogy(eb_No_db, berawgn(eb_No_db, "psk", 2, 'nondiff'), 'r')
 axis([0 13 10^-5 1])
-legend('Soft decision theoretical ber', 'Repetition code soft decision ber', 'BPSK ber')
+%legend('Soft decision theoretical ber', '3-Repetition code soft decision ber', 'BPSK ber')
+legend('Soft decision theoretical ber', '3-Repetition code soft decision ber')
+grid on
 
 ylabel('BER')
 xlabel('Eb/No [dB]')

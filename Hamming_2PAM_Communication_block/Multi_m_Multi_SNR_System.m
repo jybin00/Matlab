@@ -3,7 +3,7 @@ clear      % variable clear
 close     % figure close
 tic
 
-N_frames = 1000000;                             % number of symbols
+N_frames = 5000000;                             % number of symbols
 EbNo_db = (0:10)';                                        % bit energy [dB]
 b_error = zeros(length(EbNo_db), 1);                   % error bit array
 b_error_h = zeros(length(EbNo_db), 1);                   % error bit array
@@ -83,10 +83,13 @@ hold on
 
 semilogy( Eb_No_dB, (7* qfunc ( sqrt( (24/7)*10.^((Eb_No_dB)/10))) +...
     7* qfunc ( sqrt( (32/7)*10.^((Eb_No_dB)/10) )) + qfunc ( sqrt( (8)*10.^((Eb_No_dB)/10))) ), 'cx-')
+hold on
+semilogy( Eb_No_dB, (7* qfunc ( sqrt( (32/7)*10.^((Eb_No_dB)/10) ))) , 'kx-')
 
-grid,axis([-0.2 12 0.8*10^(-6) 1]); 
+grid,axis([-0.1 13 10^(-7) 1]); 
 xlabel('Eb/No [dB]'), ylabel('BER');
-legend("Uncoded 2PAM BER", "Theoretical Hamming BER", "Hard decision BER", "Soft decision BER");
+%legend("Uncoded 2PAM BER", "Theoretical Hamming BER", "Hard decision BER", "Soft decision BER");
+legend("Uncoded 2PAM BER", "Soft decision BER", "Theoretical Hamming BER");
 
 %%
 close

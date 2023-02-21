@@ -81,12 +81,15 @@ end
 plot(EbNo_db, BER, '-ro');                          % soft BER
 hold on
 
-semilogy( Eb_No_dB, (7* qfunc ( sqrt( (24/7)*10.^((Eb_No_dB)/10) ) +...
-    7* qfunc ( sqrt( (32/7)*10.^((Eb_No_dB)/10) ) + qfunc ( sqrt( (8)*10.^((Eb_No_dB)/10)) ))), 'cx-')
+semilogy( Eb_No_dB, (7* qfunc ( sqrt( (24/7)*10.^((Eb_No_dB)/10))) +...
+    7* qfunc ( sqrt( (32/7)*10.^((Eb_No_dB)/10) )) + qfunc ( sqrt( (8)*10.^((Eb_No_dB)/10))) ), 'cx-')
+hold on
+semilogy( Eb_No_dB, (7* qfunc ( sqrt( (32/7)*10.^((Eb_No_dB)/10) ))) , 'kx-')
 
 grid,axis([-0.2 12 0.8*10^(-6) 1]); 
 xlabel('Eb/No [dB]'), ylabel('BER');
-legend("Uncoded 2PAM BER", "Theoretical Hamming BER", "Hard decision BER", "Soft decision BER");
+%legend("Uncoded 2PAM BER", "Theoretical Hamming BER", "Hard decision BER", "Soft decision BER");
+legend("Uncoded 2PAM BER", "Soft decision BER", "Theoretical Hamming BER");
 
 %%
 close
