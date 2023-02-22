@@ -36,7 +36,7 @@ parfor i = 1:length(eb_No_db)
         end
 
         received_signal = received_signal > 0;
-        if sum(received_signal) > 1 % numel은 행렬의 원소의 개수를 반환하는 함수.
+        if sum(received_signal) > 1    % numel은 행렬의 원소의 개수를 반환하는 함수.
             decoding = 1;
         else
             decoding = -1;
@@ -72,16 +72,16 @@ close all
 
 %semilogy(eb_No_db, 1-q, 'mdiamond-')
 %hold on
-semilogy(eb_No_db, ber_s, '-bo')
-hold on
+%semilogy(eb_No_db, ber_s, '-bo')
+%hold on
 semilogy(eb_No_db, ber_h, '-ko')
 hold on
-semilogy(eb_No_db, 3*qfunc(sqrt((2/3)*10.^(eb_No_db/10))).^2-2*qfunc(sqrt((2/3)*10.^(eb_No_db/10))).^3 )
+semilogy(eb_No_db, 3*qfunc(sqrt((2/3)*10.^(eb_No_db/10))).^2-2*qfunc(sqrt((2/3)*10.^(eb_No_db/10))).^3, 'bx-' )
 hold on
 semilogy(eb_No_db, berawgn(eb_No_db, "psk", 2, 'nondiff'), 'r')
 axis([0 13 10^-5 1])
 %legend('Soft decision theoretical ber', '3-Repetition code soft decision ber', 'BPSK ber')
-legend('Soft ber', 'hard ber', 'hard theretical ber','BPSK ber')
+legend( '1/3-rate repetition hard ber', '1/3-drate repetition hard theretical ber','BPSK ber')
 grid on
 
 ylabel('BER')
