@@ -12,8 +12,8 @@ snr_db = eb_No_db + 10*log10(rate*k);
 
 N_frame = 1000000;
 message = randi([0 1], N_frame,1);
+bit_error = zeros(1,length(eb_No_db));
 bit_s_e = zeros(1,length(eb_No_db));
-bit_h_e = zeros(1,length(eb_No_db));
 No = 10.^(-snr_db/10);
 q = zeros(length(No),1);
 
@@ -27,28 +27,40 @@ parfor i = 1:length(eb_No_db)
         received_signal = awgn(code_k, 3+snr_db(i))         % 3dB를 더 해줘야 한다. 왜?? 직접 겪는 노이즈는 No/2니까. 
         if sum((received_signal - 1).^2) < sum((received_signal + 1).^2)
             decoding = 1;
+            if decoding == code_k(1)
+                continue;
+            else
+                bit_error(1,i) = bit_error(1,i) + 1;
+            end
         else
             decoding = -1;
+            if decoding == code_k(1)
+                continue;
+            else
+                bit_error(1,i) = bit_error(1,i) + 1;
+            end
         end  
 
-        if decoding ~= code_k(1)
-            bit_s_e(1,i) = bit_s_e(1,i) + 1;
-        end
-
         received_signal = received_signal > 0;
-        if sum(received_signal) > 1 % numel은 행렬의 원소의 개수를 반환하는 함수.
+        if numel(received_signal) > 1
             decoding = 1;
+            if decoding == code_k(1)
+                continue;
+            else
+                bit_s_e(1,i) = bit_s_e(1,i) + 1;
+            end
         else
             decoding = -1;
-        end
-
-        if decoding ~= code_k(1)
-            bit_h_e(1,i) = bit_h_e(1,i) + 1;
+            if decoding == code_k(1)
+                continue;
+            else
+                bit_s_e(1,i) = bit_s_e(1,i) + 1;
+            end
         end
     end
 end
+ber_h = bit_error/N_frame;
 ber_s = bit_s_e/N_frame;
-ber_h = bit_h_e/N_frame;
 toc
 %%
 close all
@@ -70,18 +82,14 @@ toc
 %%
 close all
 
-%semilogy(eb_No_db, 1-q, 'mdiamond-')
-%hold on
-semilogy(eb_No_db, ber_s, '-bo')
+semilogy(eb_No_db, 1-q, 'mdiamond-')
 hold on
-semilogy(eb_No_db, ber_h, '-ko')
+semilogy(eb_No_db, ber_h, '-bo')
 hold on
-semilogy(eb_No_db, 3*qfunc(sqrt((2/3)*10.^(eb_No_db/10))).^2-2*qfunc(sqrt((2/3)*10.^(eb_No_db/10))).^3 )
-hold on
-semilogy(eb_No_db, berawgn(eb_No_db, "psk", 2, 'nondiff'), 'r')
+%semilogy(eb_No_db, berawgn(eb_No_db, "psk", 2, 'nondiff'), 'r')
 axis([0 13 10^-5 1])
 %legend('Soft decision theoretical ber', '3-Repetition code soft decision ber', 'BPSK ber')
-legend('Soft ber', 'hard ber', 'hard theretical ber','BPSK ber')
+legend('Soft decision theoretical ber', '3-Repetition code soft decision ber')
 grid on
 
 ylabel('BER')
