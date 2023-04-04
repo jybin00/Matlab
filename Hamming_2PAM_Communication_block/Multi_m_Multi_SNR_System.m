@@ -4,7 +4,7 @@ close     % figure close
 tic
 
 N_frames = 5000000;                             % number of symbols
-EbNo_db = (0:10)';                                        % bit energy [dB]
+EbNo_db = (0:0.5:10)';                                        % bit energy [dB]
 b_error = zeros(length(EbNo_db), 1);                   % error bit array
 b_error_h = zeros(length(EbNo_db), 1);                   % error bit array
 
@@ -65,13 +65,20 @@ close all
 Eb_No_dB = -2:0.4:12;
 figure(1),semilogy( Eb_No_dB, (qfunc ( sqrt(2*10.^((Eb_No_dB)/10)) )), 'b--' );   % uncoded 2PAM BER graph
 hold on
+semilogy( Eb_No_dB, (7* qfunc ( sqrt( (24/7)*10.^((Eb_No_dB)/10))) +...
+    7* qfunc ( sqrt( (32/7)*10.^((Eb_No_dB)/10) )) + qfunc ( sqrt( (8)*10.^((Eb_No_dB)/10))) ), 'cx-')
+hold on
+plot(EbNo_db, FER, '-bo')                       % FER
+hold on
+
 k = 1;
 theorical_ber = zeros(length(Eb_No_dB), 1);
 for i = Eb_No_dB
     p = qfunc(sqrt((8/7)*10^(i/10)));
     theorical_ber(k,1) = (1- ( (1-p)^7 + 7*p*(1-p)^6 ))*(3/7);
     k = k + 1;
-end
+end 
+
 %semilogy(Eb_No_dB, theorical_ber, '-gx')
 %hold on 
 
@@ -81,18 +88,16 @@ end
 plot(EbNo_db, BER, '-ro');                          % soft BER
 hold on
 
-semilogy( Eb_No_dB, (7* qfunc ( sqrt( (24/7)*10.^((Eb_No_dB)/10))) +...
-    7* qfunc ( sqrt( (32/7)*10.^((Eb_No_dB)/10) )) + qfunc ( sqrt( (8)*10.^((Eb_No_dB)/10))) ), 'cx-')
-hold on
-semilogy( Eb_No_dB, (7* qfunc ( sqrt( (32/7)*10.^((Eb_No_dB)/10) ))) , 'kx-')
 
-grid,axis([-0.1 13 10^(-7) 1]); 
+semilogy( Eb_No_dB, (3* qfunc ( sqrt( (24/7)*10.^((Eb_No_dB)/10) ))) , 'kx-')
+
+grid,axis([-0.1 13 10^(-6) 1]); 
 xlabel('Eb/No [dB]'), ylabel('BER');
 %legend("Uncoded 2PAM BER", "Theoretical Hamming BER", "Hard decision BER", "Soft decision BER");
-legend("Uncoded 2PAM BER", "Soft decision BER", "Theoretical Hamming BER");
+legend("Uncoded BPSK BER", "FER upper bound (Union Bound)", "Soft decision FER", "Soft decision BER",   "Approx BER");
 
 %%
-close
+%close
 Eb_No_dB = -2:0.5:12;
 figure(2)
 semilogy( Eb_No_dB, 1- (1-qfunc ( sqrt(2*10.^(Eb_No_dB/10)))).^4, 'b--' );      % uncoded 2PAM FER graph
@@ -110,6 +115,7 @@ xlabel('Eb/No [dB]'), ylabel('FER');
 hold on
 
 plot(EbNo_db, FER_h, '-ko')                       % FER
+hold on
 plot(EbNo_db, FER, '-ro')                       % FER
 
 grid,axis([-0.2 12 0.5*10^(-6) 1]); 
