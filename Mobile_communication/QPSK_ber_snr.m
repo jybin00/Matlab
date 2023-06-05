@@ -11,21 +11,17 @@ SNR = 10.^(SNR_db/10);
 N0 = 2./SNR;
 err_count_AWGN = zeros(1,length(SNR_db));
 
-encode = get_modulator();
-
-FER = main(encode, channel, decode)
 %% Main loop
 for n=1:length(SNR) % SNR loop
     x_i = randi(2,[1,N_bit])-1; %% Binary bit generation 
-%     x_k = QPSK_Modulation2(N_sym,x_i);
-    x_k = encode(N_sym, x_i);
+    x_k = QPSK_Modulation2(N_sym,x_i);
 
     noise = sqrt(N0(n)/2)*(1/sqrt(2))* (randn(1,N_sym)+ randn(1,N_sym)*1i);  %% Additive White Gaussian Noise
 
     y_AWGN = x_k + noise; %% Received signal 
     x_i_hat_AWGN= QPSK_Demodulation2(N_sym,y_AWGN); 
     %% BER Count for QPSK over AWGN
-    err_count_AWGN(1,n) = sum(x_i_hat_AWGN ~= x_i);
+    err_count_AWGN(1,n) = sum(mod(x_i_hat_AWGN ~= x_i,2));
     err_count_AWGN(1,n) = err_count_AWGN(1,n)/N_bit;
 end
 
@@ -41,22 +37,3 @@ axis([0 10 10^-4 2*10^-1])
 ylabel('BER','fontsize',12,'fontname','Times New Roman') 
 xlabel('SNR[dB]','fontsize',12,'fontname','Times New Roman') 
 legend('Theoretical','AWGN Simulation')
-
-function FER = main(channel, encode, decode)
-for n=1:length(SNR) % SNR loop
-    x_i = randi(2,[1,N_bit])-1; %% Binary bit generation 
-%     x_k = QPSK_Modulation2(N_sym,x_i);
-    x_i_hat_AWGN = decode(channel(encode(N_sym, x_i)));
-    %% BER Count for QPSK over AWGN
-    err_count_AWGN(1,n) = sum(x_i_hat_AWGN ~= x_i);
-    err_count_AWGN(1,n) = err_count_AWGN(1,n)/N_bit;
-end
-end
-
-function encoder = get_modulator(param1, param2)
-xxxx = param;
-encoder = @my_modulator;
-    function codeword = my_modulator(x)
-        codeword = x + xxxx
-    end
-end
