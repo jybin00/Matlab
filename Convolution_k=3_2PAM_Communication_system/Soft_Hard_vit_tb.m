@@ -2,11 +2,11 @@ clc
 clear
 tic
 N_m_bit = 50;                                                 % Number of message bit
-N_frame = 20000;                                             % Number of frame
+N_frame = 40000;                                             % Number of frame
 test_bit = randsrc(N_frame, N_m_bit, [0 1]);     % test bit generation
 
 
-Eb_No_dB = (0:15)';
+Eb_No_dB = (0:12)';
 Es_No_dB = Eb_No_dB + 10*log10(1/2);
 FER_soft = zeros(1, length(Eb_No_dB));
 FER_hard = zeros(1, length(Eb_No_dB));
@@ -30,10 +30,10 @@ for n = 1 : length(Eb_No_dB)         % Eb를 바꿔가면서 계산
         % encoded input = (message_bit + tail bit) * 2
         input = test_bit(j, :);
         encoded_input = Convolution_code(input);  
-        demodulated_output = zeros(1, 2*(N_m_bit+2));
-
         encoded_input = encoded_input';
+
         modulated_output = zeros(2*(N_m_bit+2), 1);
+        demodulated_output = zeros(1, 2*(N_m_bit+2));
 
         % modulation -> channel -> demodulation
         for i = 1: 2*(N_m_bit+2)
