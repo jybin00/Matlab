@@ -6,7 +6,7 @@ N_frame = 20000;                                             % Number of frame
 test_bit = randsrc(N_frame, N_m_bit, [0 1]);     % test bit generation
 
 
-Eb_No_dB = (0:10)';
+Eb_No_dB = (0:15)';
 Es_No_dB = Eb_No_dB + 10*log10(1/2);
 FER_soft = zeros(1, length(Eb_No_dB));
 FER_hard = zeros(1, length(Eb_No_dB));
@@ -20,8 +20,7 @@ error_hard = zeros(1, length(Eb_No_dB));
 N_f_sim(1,1:length(Eb_No_dB)) = N_frame;
 demodulated_output = zeros(1, 2*(N_m_bit+2));
 
-
-parfor n = 1 : length(Eb_No_dB)         % Eb를 바꿔가면서 계산
+for n = 1 : length(Eb_No_dB)         % Eb를 바꿔가면서 계산
     disp(n)                                      % 진행상황 확인을 위한 인덱스
     No = 10^(-Es_No_dB(n)/10);
     sigma = sqrt(No/2);
@@ -51,8 +50,8 @@ parfor n = 1 : length(Eb_No_dB)         % Eb를 바꿔가면서 계산
         
         decoding_input = reshape(received_signal, [2, length(received_signal)/2]);
         decoding_input = decoding_input';
-        decoding_soft = Viterbi_soft_decoding(decoding_input, N_m_bit, 1);
-        decoding_hard = Viterbi_decoding(demodulated_output, N_m_bit);
+        decoding_soft = Viterbi_soft_decoding_mex(decoding_input, N_m_bit, 1);
+        decoding_hard = Viterbi_decoding_mex(demodulated_output, N_m_bit);
 
         error_s = nnz(input-decoding_soft);
         error_h = nnz(input-decoding_hard);
