@@ -6,11 +6,12 @@ tic
 %system parameter
 Eb_No_dB = (0:15)';
 SNR_dB = Eb_No_dB;
-BER_hard = zeros(length(Eb_No_dB));
-BER_soft = zeros(length(Eb_No_dB));
+BER_hard = zeros(1, length(Eb_No_dB));
+BER_soft = zeros(1, length(Eb_No_dB));
+tb = 10;
 
 % input
-number_of_msg = 10e5;
+number_of_msg = 20e5;
 msg = randi([0 1], 1, number_of_msg);
 
 % convolution code
@@ -28,8 +29,9 @@ for i = 1: length(Eb_No_dB)
     demodulated_output = received_bit > 0;
     
     % decoding
-    decoding_hard = vitdec(demodulated_output, trellis, 50, 'trunc', 'hard');
-    decoding_soft =  vitdec(received_bit,               trellis, 50, 'trunc', 'unquant');
+    decoding_hard = vitdec(demodulated_output, trellis, tb, 'trunc', 'hard');
+    % llr 계산이 반대로 되어 있어서 - 붙여야 한다ter c/ 
+    decoding_soft =  vitdec(-received_bit,       trellis, tb, 'trunc', 'unquant');
     
     % FER, BER measure
     BER_hard(i) = nnz(decoding_hard - msg) / number_of_msg;
@@ -39,23 +41,69 @@ toc
 
 %%
 close all
-Eb_of_No_db = -1:0.1:12;
-% theorical uncoded BER
-semilogy(Eb_of_No_db, qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) ), 'r--' );
+figure(1)
 hold on
 grid on
 
-% sim BER
-plot(Eb_No_dB, BER_hard, 'kx-')
+linewidth = 1.5;
+fontsize = 14;
+markersize = 10;
 
-plot(Eb_No_dB, BER_soft, 'bo-')
+set(gca, 'FontName', 'Helvatica', 'FontSize', fontsize)
+set(gca, 'yscale', 'log');
+
+xlabel("Eb/No", ...
+    'FontWeight', 'bold'); 
+ylabel('BER', ...
+    'FontWeight', 'bold');
+
+
+Eb_of_No_db = -1:0.1:12;
+% theorical uncoded BER
+% semilogy(Eb_of_No_db, qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) ), 'r--' );
+p_uncoded = plot(Eb_of_No_db, qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) ), ...
+    'color', '#ff0000', ...
+    'linewidth', 1, ...
+    'linestyle', '--');
+
+% sim BER
+% semilogy(Eb_No_dB, BER_hard, 'kx-')
+p_hard_viterbi = plot(Eb_No_dB, BER_hard, ...
+    'color', '#000000', ...
+    'linewidth', linewidth, ...
+    'linestyle', '-', ...
+    'marker', 'x', ...
+    'markersize', markersize);
+
+% semilogy(Eb_No_dB, BER_soft, 'bo-')
+p_soft_viterbi = plot(Eb_No_dB, BER_soft, ...
+    'color', '#0000ff', ...
+    'linewidth', linewidth, ...
+    'linestyle', '-', ...
+    'marker', 'o', ...
+    'markersize', markersize);
 
 axis([0 12 10^-5 1])
 xticks(0:2:12)
 
-xlabel("Eb/No"); 
-ylabel('BER');
+
 
 %legend('Uncoded 2PAM BER', 'Hard wrong Viterbi v = 2, m = 50', 'Hard correct Viterbi v = 2, m = 50')
-legend('Uncoded 2PAM BER', 'Hard Viterbi v = 2', 'Soft Viterbi v = 2')
+lgd = legend([p_uncoded, p_hard_viterbi, p_soft_viterbi], ...
+    {'Uncoded 2PAM BER', 'Hard Viterbi v = 2', 'Soft Viterbi v = 2'});
+lgd.FontSize = fontsize;
+lgd.Location = 'best';
+
+
+% annotation('doublearrow',[0.448214285714286 0.675],...
+%     [0.270428571428571 0.276190476190476]);
+
+% % textbox 생성
+% annotation('textbox',...
+%     [0.478571428571429 0.204952380952382 0.0959821428571429 0.0654761904761905],...
+%     'String',{'5 dB'},...
+%     'FontWeight','bold',...
+%     'FontSize',14,...
+%     'FitBoxToText','off',...
+%     'EdgeColor','none');
 
