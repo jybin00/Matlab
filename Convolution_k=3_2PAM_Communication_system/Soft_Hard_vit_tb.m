@@ -2,7 +2,7 @@ clc
 clear
 tic
 N_m_bit = 50;                                                 % Number of message bit
-N_frame = 40000;                                             % Number of frame
+N_frame = 60000;                                             % Number of frame
 test_bit = randsrc(N_frame, N_m_bit, [0 1]);     % test bit generation
 
 
@@ -79,48 +79,104 @@ for n = 1 : length(Eb_No_dB)         % Eb를 바꿔가면서 계산
 end
 toc
 
-%%
+%% BER graph
 close all
-Eb_of_No_db = -1:0.1:12;
-% theorical uncoded BER
-semilogy(Eb_of_No_db, qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) ), 'r--' );
+figure(1)
 hold on
-
-% sim BER
-plot(Eb_No_dB, BER_hard, 'kx-')
-hold on
-plot(Eb_No_dB, BER_soft, 'bo-')
+grid on
 
 axis([0 12 10^-5 1])
 xticks(0:2:12)
-grid on
 
-xlabel("Eb/No"); 
-ylabel('BER');
+linewidth = 1.5;
+fontsize = 14;
+markersize = 10;
+
+set(gca, "FontName", "Helvatica", "FontSize", fontsize)
+set(gca, "yscale", "log");
+
+xlabel("Eb/No", ...
+    "FontWeight", 'bold');
+ylabel("BER", ...
+    "FontWeight", 'bold');
+
+Eb_of_No_db = -1:0.1:12;
+
+% theorical uncoded BER
+p_uncoded = plot(Eb_of_No_db, qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) ), ...
+    'color', '#ff0000', ...
+    'linewidth', 1, ...
+    'linestyle', '--' );
+
+% sim BER
+p_hard = plot(Eb_No_dB, BER_hard, ...
+    'color', '#000000', ...
+    'linewidth', 1, ...
+    'linestyle', '-', ...
+    'marker', 'x', ...
+    'markersize', markersize);
+
+p_soft = plot(Eb_No_dB, BER_soft, ...
+    'color', '#0000ff', ...
+    'linewidth', 1, ...
+    'linestyle', '-', ...
+    'marker', 'o', ...
+    'markersize', markersize);
 
 %legend('Uncoded 2PAM BER', 'Hard wrong Viterbi v = 2, m = 50', 'Hard correct Viterbi v = 2, m = 50')
-legend('Uncoded 2PAM BER', 'Hard Viterbi v = 2, m = 25', 'Soft Viterbi v = 2, m = 25')
+lgd = legend([p_uncoded, p_hard, p_soft], ...
+    {'Uncoded 2PAM BER', 'Hard Viterbi v = 2, m = 25', 'Soft Viterbi v = 2, m = 25'});
+lgd.FontSize = fontsize;
+lgd.Location = 'best';
 
-%%
+%% FER graph
 
-close all
-Eb_of_No_db = -1:0.1:12;
 figure(2)
-% theorical FER
-semilogy(Eb_of_No_db, 1- (1-qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) )).^(50), 'r--' );
 hold on
+grid on
+axis([0 12 10^-3 10])
+xticks([0:2:12])
+
+linewidth = 1;
+fontsize = 13;
+markersize = 9;
+
+set(gca, 'FontName', "Helvatica", 'FontSize', fontsize)
+set(gca, 'yscale', 'log');
+
+xlabel("Eb/No", ...
+    'FontWeight', 'bold');
+ylabel("BER", ...
+    'FontWeight', 'bold');
+
+Eb_of_No_db = -1:0.1:12;
+
+% theorical FER
+p_theory = plot(Eb_of_No_db, 1- (1-qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) )).^(50), ...
+    'color', '#ff0000', ...
+    'linewidth', 1, ...
+    'linestyle', '--' );
 
 % sim FER
-plot(Eb_No_dB, FER_hard, 'kx-')
-hold on
-plot(Eb_No_dB, FER_soft, 'bo-')
+p_hard = plot(Eb_No_dB, FER_hard, ...
+    'color', '#000000', ...
+    'linewidth', 1, ...
+    'linestyle', '-', ...
+    'marker', 'x', ...
+    'markersize', markersize);
 
-axis([0 12 10^-5 10])
-xticks([0:2:12])
-grid on
+p_soft = plot(Eb_No_dB, FER_soft, ...
+    'color', '#0000ff', ...
+    'linewidth', 1, ...
+    'linestyle', '-', ...
+    'marker', 'o', ...
+    'markersize', markersize);
 
-xlabel("Eb/No"); 
-ylabel('FER');
 
-legend('Uncoded 2PAM FER', 'Hard Viterbi v = 2, m = 50', 'Soft Viterbi v = 2, m = 50')
+lgd = legend([p_theory, p_hard, p_soft], ...
+    {'Uncoded 2PAM FER', 'Hard Viterbi v = 2, m = 50', 'Soft Viterbi v = 2, m = 50'});
+lgd.FontSize = fontsize;
+lgd.Location = 'best';
+
+
 % legend('Uncoded 4QAM FER', 'Soft Viterbi v = 2, m = 50')
