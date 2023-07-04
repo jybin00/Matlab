@@ -11,7 +11,7 @@ BER_soft = zeros(1, length(Eb_No_dB));
 tb = 10;
 
 % input
-number_of_msg = 20e5;
+number_of_msg = 50e5;
 msg = randi([0 1], 1, number_of_msg);
 
 % convolution code
@@ -29,9 +29,9 @@ for i = 1: length(Eb_No_dB)
     demodulated_output = received_bit > 0;
     
     % decoding
-    decoding_hard = vitdec(demodulated_output, trellis, tb, 'trunc', 'hard');
+    decoding_hard = vitdec(demodulated_output, trellis, tb, 'term', 'hard');
     % llr 계산이 반대로 되어 있어서 - 붙여야 한다ter c/ 
-    decoding_soft =  vitdec(-received_bit,       trellis, tb, 'trunc', 'unquant');
+    decoding_soft =  vitdec(-received_bit,       trellis, tb, 'term', 'unquant');
     
     % FER, BER measure
     BER_hard(i) = nnz(decoding_hard - msg) / number_of_msg;
