@@ -2,7 +2,7 @@ clc
 clear
 tic
 N_m_bit = 50;                                                 % Number of message bit
-N_frame = 60000;                                             % Number of frame
+N_frame = 2e5;                                             % Number of frame
 test_bit = randsrc(N_frame, N_m_bit, [0 1]);     % test bit generation
 
 
@@ -64,7 +64,7 @@ for n = 1 : length(Eb_No_dB)         % Eb를 바꿔가면서 계산
             error_hard(1, n) = error_hard(1, n) + error_h;
         end
 
-        if error_soft(1, n) > 10000
+        if error_soft(1, n) > 4000
             N_f_sim(1, n) = j;
             disp(j)
             break
@@ -134,7 +134,7 @@ lgd.Location = 'best';
 figure(2)
 hold on
 grid on
-axis([0 12 10^-3 10])
+axis([0 12 10^-5 1])
 xticks([0:2:12])
 
 linewidth = 1;
@@ -152,7 +152,7 @@ ylabel("BER", ...
 Eb_of_No_db = -1:0.1:12;
 
 % theorical FER
-p_theory = plot(Eb_of_No_db, 1- (1-qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) )).^(50), ...
+p_theory = plot(Eb_of_No_db, 1- (1-qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) )).^(N_m_bit), ...
     'color', '#ff0000', ...
     'linewidth', 1, ...
     'linestyle', '--' );
