@@ -7,7 +7,7 @@ clear
 
 %number of frame
 n_info_bit = 50;
-n_frame = 1e6;
+n_frame = 4e4;
 
 %Eb/No db range
 Eb_No_dB = (0:10);
@@ -27,6 +27,7 @@ BCJR_Decoder = comm.APPDecoder(...
     'CodedBitLLROutputPort', false);
 
 for i = 1:length(Eb_No_dB)
+    disp(i)
     for j = 1:n_frame
         info_bit = randi([0 1], 1, n_info_bit);
         messages = convenc(info_bit, trellis);
@@ -41,7 +42,8 @@ for i = 1:length(Eb_No_dB)
             zeros(length(info_bit), 1), (2*received_bit*10^(SNR_dB(i)/10))');
         harddecoded_bit = decoded_bit' > 0;
         BER(i) = BER(i) + nnz(harddecoded_bit - info_bit);
-        FER(i) = FER(i) + nnz(harddecoded_bit ~= info_bit);
+        frame_error = double(nnz(harddecoded_bit ~= info_bit) > 0);
+        FER(i) = FER(i) + frame_error;
     end
 end
 
@@ -113,7 +115,7 @@ ylabel("FER", ...
 Eb_of_No_db = -1:0.1:12;
 
 % theorical uncoded FER
-p_uncoded = plot(Eb_of_No_db, qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) ), ...
+p_uncoded = plot(Eb_of_No_db, 1-(1-qfunc(sqrt(2*10.^(Eb_of_No_db/10) )) ).^n_info_bit , ...
     'color', '#ff0000', ...
     'linewidth', 1, ...
     'linestyle', '--' );
@@ -129,7 +131,8 @@ p_hard = plot(Eb_No_dB, FER, ...
 
 lgd = legend([p_uncoded, p_hard],...
     "Uncoded 2PAM FER", "hard BCJR FER");
-
+lgd.FontSize = fontsize;
+lgd.Location = 'best';
 
 
 
