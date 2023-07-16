@@ -16,7 +16,8 @@ sigma = 10.^(-SNR_dB./10);
 %trellis
 trellis = poly2trellis(3, [6 7]);
 
-%mode
+%mode 2 == MAT exchange
+%mode 1 == APP decoder
 test_mode = 2;
 
 %Decoder
@@ -31,6 +32,7 @@ BER = zeros(1, length(Eb_No_dB));
 
 for i = 1:length(Eb_No_dB)
     disp(i)
+    decoded_bit = zeros(1, length(n_info_bit));
     for j = 1:n_frame
 
         % information bit generation
@@ -40,7 +42,7 @@ for i = 1:length(Eb_No_dB)
         messages = convenc(info_bit, trellis);
 
         % BPSK modulation
-        modulated_bit = 2*messages -1;
+        modulated_bit = 2*messages-1;
         % AWGN channel 
         received_bit = awgn(modulated_bit, SNR_dB(i));
     
@@ -49,12 +51,12 @@ for i = 1:length(Eb_No_dB)
                 zeros(length(info_bit), 1),  (2*received_bit*10^(SNR_dB(i)/10))');
     
         elseif test_mode == 2
-            decoded_bit = BCJR_matexchange_mex(...
-                received_bit, trellis, sigma(i) );
+            decoded_bit = BCJR_matexchange(...
+                received_bit, trellis, 10^(-SNR_dB(i)/10) );
         end
 
         decoded_bit = decoded_bit > 0;
-        decoded_bit = reshape(decoded_bit, 1, length(decoded_bit));
+        decoded_bit = 1*reshape(decoded_bit, 1, length(decoded_bit));
         BER(i) = BER(i) + nnz(decoded_bit - info_bit);
     end
     BER(i) = BER(i)/ (n_info_bit * n_frame);
