@@ -42,7 +42,7 @@ function LLR = BCJR_matexchange(y, trellis, sigma)
                         end
                         x = bin;
                     end
-                    gamma(stage, curr_s, prev_s) = exp(-sum((x-y(n*(stage-1)+1 : n*stage)).^2)/(2*sigma^2) );
+                    gamma(stage, prev_s, curr_s) = exp( -sum( (x-y(n*(stage-1)+1 : n*stage) ).^2 ) / (2*sigma^2) );
                 end
             end
         end
@@ -52,9 +52,9 @@ function LLR = BCJR_matexchange(y, trellis, sigma)
     alpha = zeros(N*R+1, trellis.numStates);
     alpha(1,1) = 1;
     for stage = 2 : N*R+1
-        for curr_s = 1 : trellis.numStates
-            for prev_s = 1 : trellis.numStates
-                alpha(stage, curr_s) = alpha(stage, curr_s) + gamma(stage-1, curr_s, prev_s) * alpha(stage-1, prev_s) ;
+        for prev_s = 1 : trellis.numStates
+            for curr_s = 1 : trellis.numStates
+                alpha(stage, curr_s) = alpha(stage, curr_s) + gamma(stage-1, prev_s, curr_s) * alpha(stage-1, prev_s) ;
             end
         end
         alpha(stage,:) =  alpha(stage,:) / sum(alpha(stage,:)); % Normalization
@@ -64,7 +64,7 @@ function LLR = BCJR_matexchange(y, trellis, sigma)
     beta = zeros(N*R+1,trellis.numStates);
     beta(N*R+1,:) = alpha(N*R+1,:);
     for stage = N*R+1:-1:2
-        for pre_v = 1 : trellis.numStates
+        for prev_s = 1 : trellis.numStates
             for curr_s = 1 : trellis.numStates
                 beta(stage-1, prev_s) = beta(stage-1, prev_s) + gamma(stage-1, prev_s, curr_s) * beta(stage, curr_s) ;
             end
@@ -80,15 +80,15 @@ function LLR = BCJR_matexchange(y, trellis, sigma)
         for prev_s = 1:trellis.numStates
             for curr_s = 1:trellis.numStates
                 [msg,in] = ismember(curr_s - 1, trellis.nextStates(prev_s,:));
-                if (msg == 1 && in == 1) % input=0
-                   up = up + alpha(stage,prev_s) * gamma(stage,curr_s,prev_s) * beta(stage+1,curr_s);
+                if (msg == 1 && in == 2) % input = 1
+                   up = up + alpha(stage, prev_s) * gamma(stage, prev_s, curr_s) * beta(stage+1, curr_s);
                 else 
-                    if (msg == 1 && in == 2) % input=1
-                        down = down + alpha(stage,prev_s) * gamma(stage,curr_s,prev_s) * beta(stage+1,curr_s);
+                    if (msg == 1 && in == 1) % input = 0
+                        down = down + alpha(stage, prev_s) * gamma(stage, prev_s, curr_s) * beta(stage+1, curr_s);
                     end
                 end
             end
         end
-        LLR(stage) = -log(up/down);
+        LLR(stage) = log(up/down);
     end
 end
