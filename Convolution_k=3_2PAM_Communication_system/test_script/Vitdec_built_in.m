@@ -4,25 +4,26 @@ tic
 % 매트랩 내장 함수인 vitdec을 이용해서 실제로 제대로 구현한 것인지 확인해보기.
 
 %system parameter
-Eb_No_dB = (0:15)';
+Eb_No_dB = (0:10)';
 SNR_dB = Eb_No_dB;
 BER_hard = zeros(1, length(Eb_No_dB));
 BER_soft = zeros(1, length(Eb_No_dB));
 FER_hard = zeros(1, length(Eb_No_dB));
-tb = 10;
+tb = 50;
 
 % input
-number_of_msg = 1e7;
+number_of_msg = 4e6;
 msg = randi([0 1], 1, number_of_msg);
 
 % convolution code
-trellis = poly2trellis(3, [7 5]);
+trellis = poly2trellis(6,[65 57]);
 coded_bit = convenc(msg, trellis);
 
 % mapping
 symbol = 2*coded_bit - 1;
 
 for i = 1: length(Eb_No_dB)
+    fprintf("Eb/No = %d dB \n", Eb_No_dB(i));
     % channel
     received_bit = awgn(symbol, SNR_dB(i));
     
@@ -32,12 +33,11 @@ for i = 1: length(Eb_No_dB)
     % decoding
     decoding_hard = vitdec(demodulated_output, trellis, tb, 'term', 'hard');
     % llr 계산이 반대로 되어 있어서 - 붙여야 한다ter c/ 
-    decoding_soft =  vitdec(-received_bit,       trellis, tb, 'term', 'unquant');
+    decoding_soft =  vitdec(-received_bit,     trellis, tb, 'term', 'unquant');
     
     % FER, BER measure
     BER_hard(i) = nnz(decoding_hard - msg) / number_of_msg;
     BER_soft(i) = nnz(decoding_soft - msg) / number_of_msg;
-    FER_hard(i) = 
 end
 toc
 
@@ -92,7 +92,7 @@ xticks(0:2:12)
 
 %legend('Uncoded 2PAM BER', 'Hard wrong Viterbi v = 2, m = 50', 'Hard correct Viterbi v = 2, m = 50')
 lgd = legend([p_uncoded, p_hard_viterbi, p_soft_viterbi], ...
-    {'Uncoded 2PAM BER', 'Hard Viterbi v = 2', 'Soft Viterbi v = 2'});
+    {'Uncoded 2PAM BER', 'Hard Viterbi v = 5', 'Soft Viterbi v = 5'});
 lgd.FontSize = fontsize;
 lgd.Location = 'best';
 

@@ -1,3 +1,4 @@
+%% rate = 1/2에 해당하는 모든 convolution code에 대해서 실행되는 vitdec 알고리즘 만들기.
 clc
 clear
 tic
@@ -19,6 +20,13 @@ error_hard = zeros(1, length(Eb_No_dB));
 
 N_f_sim(1,1:length(Eb_No_dB)) = N_frame;
 demodulated_output = zeros(1, 2*(N_m_bit+2));
+
+% trellis 정보를 이용해서 입력에 대한 output 구하기.
+trellis = poly2trellis(6, [65, 57]);
+outputs = trellis.outputs;
+output_zero = int2bit(outputs(:,1)', trellis.numInputSymbols)';
+output_one  = int2bit(outputs(:,2)', trellis.numInputSymbols);
+
 
 for n = 1 : length(Eb_No_dB)         % Eb를 바꿔가면서 계산
     disp(n)                          % 진행상황 확인을 위한 인덱스
@@ -51,7 +59,7 @@ for n = 1 : length(Eb_No_dB)         % Eb를 바꿔가면서 계산
         decoding_input = reshape(received_signal, [2, length(received_signal)/2]);
         decoding_input = decoding_input';
         decoding_soft = Viterbi_soft_decoding_mex(decoding_input, N_m_bit, 1);
-        decoding_hard = Viterbi_decoding_mex(demodulated_output, N_m_bit);
+        decoding_hard = Vit_gen_hard_dec(demodulated_output, trellis, output_zero, output_one);
 
         error_s = nnz(input-decoding_soft);
         error_h = nnz(input-decoding_hard);
@@ -134,8 +142,8 @@ lgd.Location = 'best';
 figure(2)
 hold on
 grid on
-axis([0 12 10^-4 5]);
-xticks(0:2:12);
+axis([0 12 10^-5 1])
+xticks([0:2:12])
 
 linewidth = 1;
 fontsize = 13;
@@ -144,7 +152,7 @@ markersize = 9;
 set(gca, 'FontName', "Helvatica", 'FontSize', fontsize)
 set(gca, 'yscale', 'log');
 
-xlabel("Eb/No", ... 
+xlabel("Eb/No", ...
     'FontWeight', 'bold');
 ylabel("BER", ...
     'FontWeight', 'bold');
