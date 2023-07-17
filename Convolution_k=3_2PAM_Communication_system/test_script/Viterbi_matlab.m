@@ -8,10 +8,11 @@ Eb_No_dB = (0:15)';
 SNR_dB = Eb_No_dB;
 BER_hard = zeros(1, length(Eb_No_dB));
 BER_soft = zeros(1, length(Eb_No_dB));
+FER_hard = zeros(1, length(Eb_No_dB));
 tb = 10;
 
 % input
-number_of_msg = 50e5;
+number_of_msg = 1e7;
 msg = randi([0 1], 1, number_of_msg);
 
 % convolution code
@@ -36,6 +37,7 @@ for i = 1: length(Eb_No_dB)
     % FER, BER measure
     BER_hard(i) = nnz(decoding_hard - msg) / number_of_msg;
     BER_soft(i) = nnz(decoding_soft - msg) / number_of_msg;
+    FER_hard(i) = 
 end
 toc
 

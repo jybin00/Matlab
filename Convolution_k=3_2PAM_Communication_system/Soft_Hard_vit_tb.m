@@ -1,8 +1,8 @@
 clc
 clear
 tic
-N_m_bit = 50;                                                 % Number of message bit
-N_frame = 2e5;                                             % Number of frame
+N_m_bit = 50;                                    % Number of message bit
+N_frame = 2e5;                                   % Number of frame
 test_bit = randsrc(N_frame, N_m_bit, [0 1]);     % test bit generation
 
 

@@ -12,14 +12,16 @@ BER = zeros(1, length(Eb_No_dB));
 error = zeros(1, length(Eb_No_dB));
 N_f_sim(1,1:length(Eb_No_dB)) = N_frame;
 
+trellis = poly2trellis(3, [7 5]);
+
 for i = 1: length(Eb_No_dB)                    % Eb를 바꿔가면서 계산
     
     sigma = sqrt(10^(-Eb_No_dB(i)/10));
 
     for j = 1 : N_frame                              % frame 개수만큼 계산
         % encoded input = (message_bit + tail bit) * 2
-        input = test_bit(j, :);
-        encoded_input = Convolution_code(input);
+        input = [test_bit(j, :) 0 0];  % tail bit
+        encoded_input = convenc(input, trellis);
         encoded_input = encoded_input';
         modulated_output = 2*encoded_input - 1;      % 2PAM or BPSK
 
@@ -33,7 +35,7 @@ for i = 1: length(Eb_No_dB)                    % Eb를 바꿔가면서 계산
             demodulated_output(1, index)=Demodulation(received_signal(index));
         end
 
-        decoding = Wrong_Viterbi_decoding(demodulated_output, N_m_bit);
+        decoding = Viterbi_general(demodulated_output, trellis);
         a = nnz(input-decoding);
         if a > 0
             FER(1, i)= FER(1, i) + 1;
