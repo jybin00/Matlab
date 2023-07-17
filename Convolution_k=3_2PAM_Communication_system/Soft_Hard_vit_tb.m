@@ -21,10 +21,10 @@ N_f_sim(1,1:length(Eb_No_dB)) = N_frame;
 demodulated_output = zeros(1, 2*(N_m_bit+2));
 
 for n = 1 : length(Eb_No_dB)         % Eb를 바꿔가면서 계산
-    disp(n)                                      % 진행상황 확인을 위한 인덱스
+    disp(n)                          % 진행상황 확인을 위한 인덱스
     No = 10^(-Es_No_dB(n)/10);
     sigma = sqrt(No/2);
-    for j = 1 : N_frame                       % frame 개수만큼 계산
+    for j = 1 : N_frame              % frame 개수만큼 계산
 
         % 1~ message bit || 1+ message bit ~ 2* message bit ....
         % encoded input = (message_bit + tail bit) * 2
