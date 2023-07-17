@@ -26,8 +26,8 @@ function decoded_output = Vit_gen_hard_dec(demodulated_output, trel, output_zero
         elseif t > 1 && t <= n_mem                                                 
             for j = 1 : 2^(t-1)
                 Current_state = (n_states/2^(t-1))*(j-1);                            % ex) current_path = [0 0], [1 0]
-                Prev_state_zero = mod(n_mem * Current_state, n_states)+1;            % prev_path_from 0 = [0 0] 끝자리 0
-                Prev_state_one  = mod(n_mem * Current_state + 1, n_states) +1;       % prev_path_from 1 = [0 1] 끝자리 1
+                Prev_state_zero = mod(2 * Current_state, n_states)+1;            % prev_path_from 0 = [0 0] 끝자리 0
+                Prev_state_one  = mod(2 * Current_state + 1, n_states) +1;       % prev_path_from 1 = [0 1] 끝자리 1
 
                 % BM = min{ 끝자리 0에서 온 PM + BM, 끝자리 1에서 온 PM + BM}
 
