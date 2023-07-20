@@ -15,8 +15,8 @@ output_zero = int2bit(outputs(:,1)', n_inputSymbols)';
 output_one  = int2bit(outputs(:,2)', n_inputSymbols)';
 
 %-----------------------------------------------------------------------------------
-
 p = inputParser;
+
 default_type = 'hard';
 valid_type = {'hard', 'soft'};
 check_type = @(x) any(validatestring(x, valid_type));
@@ -27,14 +27,15 @@ addOptional(p, 'type', default_type, check_type);
 
 parse(p, trel, num_message_bit, varargin{:});
 
+% 문자열 비교하기.
 if strcmp(p.Results.type, 'hard')
     decoder = @hard_vitdec;
 elseif strcmp(p.Results.type, 'soft')
     decoder = @soft_vitdec;
-    output_zero = 2*(int2bit(outputs(:,1)', n_inputSymbols)') -1;
-    output_one  = 2*(int2bit(outputs(:,2)', n_inputSymbols)') -1;
+    output_zero = 2 * (int2bit(outputs(:,1)', n_inputSymbols)') - 1;
+    output_one  = 2 * (int2bit(outputs(:,2)', n_inputSymbols)') - 1;
 end
-
+%% hard decoding function
     function decoded_output = hard_vitdec(demodulated_output)
 
         decoded_output = zeros(1, num_message_bit + tail_bit);  % demodulated_bit + (tail bits)
@@ -178,7 +179,7 @@ end
         %disp(fliplr(Survivor_path));
         decoded_output = decoded_output(1:num_message_bit);
     end
-
+%% Soft decoding function
     function decoded_output = soft_vitdec(received_output)
         decoded_output = zeros(1, num_message_bit + tail_bit);  % demodulated_bit + (tail bits)
         %---------------------------------------------------------------------------------

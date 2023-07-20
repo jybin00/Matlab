@@ -6,7 +6,6 @@ N_m_bit = 25;                                    % Number of message bit
 N_frame = 4e4;                                   % Number of frame
 
 
-
 Eb_No_dB = (0:9)';
 snr_dB = Eb_No_dB;
 FER_soft = zeros(1, length(Eb_No_dB));
@@ -25,12 +24,8 @@ trellis = poly2trellis(3, [7, 5]);
 tail_bit = repelem(0, log2(trellis.numStates));
 test_bit = randsrc(N_frame, N_m_bit, [0 1]);     % test bit generation
 
-outputs = trellis.outputs;
-output_zero = int2bit(outputs(:,1)', trellis.numInputSymbols)';
-output_one  = int2bit(outputs(:,2)', trellis.numInputSymbols)';
-
-hard_decoder = Vitdec(trellis, 25, 'type', 'hard');
-soft_decoder = Vitdec(trellis, 25, 'type', 'soft');
+hard_decoder = Vitdec(trellis, N_m_bit, 'type', 'hard');
+soft_decoder = Vitdec(trellis, N_m_bit, 'type', 'soft');
 
 
 for n = 1 : length(Eb_No_dB)         % Eb를 바꿔가면서 계산
