@@ -2,7 +2,7 @@ clc
 clear
 tic
 N_m_bit = 30;                                      % Number of message bit
-N_frame = 3e5;                                  % Number of frame
+N_frame = 3e4;                                  % Number of frame
 test_bit = randsrc(N_frame, N_m_bit, [0 1]);       % test bit generation
 
 Eb_No_dB = (0: 1: 9)';
@@ -16,10 +16,10 @@ N_f_sim(1,1:length(Eb_No_dB)) = N_frame;
 %mode
 mode = 2;
 
-trellis = poly2trellis(6, [65, 57]);
+trellis = poly2trellis(5, [23, 35]);
 %trellis = poly2trellis(3, [7, 5]);
 tail_bit = repelem(0, log2(trellis.numStates));
-n_mem = trellis.numInputSymbols;
+n_mem = log2(trellis.numStates);
 
 % trellis 정보를 이용해서 입력에 대한 output 구하기.
 outputs = trellis.outputs;

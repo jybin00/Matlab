@@ -1,7 +1,7 @@
 % Viterbi decoding
 % Convolution code는 trellis 정보에 따라 달라짐.
 % R = 1/2 code
-function decoded_output = Vit_gen_hard_dec(demodulated_output, trel, output_zero, output_one)  
+function decoded_output = Vit_gen_soft_dec(demodulated_output, trel, output_zero, output_one)  
     
     tail_bit = log2(trel.numStates);
     n_mem = log2(trel.numStates);
@@ -33,8 +33,8 @@ function decoded_output = Vit_gen_hard_dec(demodulated_output, trel, output_zero
 
                 % 입력 0을 받아서 현재 값이 되었을 경우
                 if Current_state < n_states / trel.numInputSymbols                         
-                    BM_zero = nnz(output_zero(Prev_state_zero, :) - codeword(t-1,:));   % 끝자리가 0인 코드에 0이 들어왔을 때 outputd으로 BM 계산
-                    BM_one  = nnz(output_zero(Prev_state_one,  :) - codeword(t-1, :));  % 끝자리가 1인 코드에 0이 들어왔을 때
+                    BM_zero = sum((output_zero(Prev_state_zero, :) - codeword(t-1,:)).^2);  % 끝자리가 0인 코드에 0이 들어왔을 때 outputd으로 BM 계산
+                    BM_one  = sum((output_zero(Prev_state_one, :) - codeword(t-1, :)).^2);  % 끝자리가 1인 코드에 0이 들어왔을 때
                     [Path_metric(1+Current_state, t), I] = min([Path_metric(Prev_state_zero, t-1) + BM_zero, ...
                                                                                      Path_metric(Prev_state_one, t-1) + BM_one]);
                     Message_bit(1 + Current_state, t) = 0;
@@ -46,8 +46,8 @@ function decoded_output = Vit_gen_hard_dec(demodulated_output, trel, output_zero
 
                 % 입력 1을 받아서 현재 값이 되었을 경우    
                 else	                                                            
-                    BM_zero = nnz(output_one(Prev_state_zero, :) - codeword(t-1, :));
-                    BM_one  = nnz(output_one(Prev_state_one, :)  - codeword(t-1, :));
+                    BM_zero = sum((output_one(Prev_state_zero, :) - codeword(t-1,:)).^2);  % 끝자리가 0인 코드에 1이 들어왔을 때 outputd으로 BM 계산
+                    BM_one  = sum((output_one(Prev_state_one, :) - codeword(t-1, :)).^2);  % 끝자리가 1인 코드에 1이 들어왔을 때
                     [Path_metric(1+Current_state, t), I] = min([Path_metric(Prev_state_zero, t-1) + BM_zero, ...
                                                                                      Path_metric(Prev_state_one, t-1) + BM_one]);
                     Message_bit(1+Current_state, t) = 1;
@@ -68,8 +68,8 @@ function decoded_output = Vit_gen_hard_dec(demodulated_output, trel, output_zero
                 % BM = min{ 끝자리 0에서 온 PM + BM, 끝자리 1에서 온 PM + BM}
                 % 입력 0을 받아서 현재 값이 되었을 경우
                 if Current_state <  n_states / trel.numInputSymbols             
-                    BM_zero = nnz(output_zero(Prev_state_zero, :) - codeword(t-1, :));
-                    BM_one  = nnz(output_zero(Prev_state_one,  :) - codeword(t-1, :));
+                    BM_zero = sum((output_zero(Prev_state_zero, :) - codeword(t-1,:)).^2);  % 끝자리가 0인 코드에 0이 들어왔을 때 outputd으로 BM 계산
+                    BM_one  = sum((output_zero(Prev_state_one, :) - codeword(t-1, :)).^2);  % 끝자리가 1인 코드에 0이 들어왔을 때
                     [Path_metric(j, t), I] = min([Path_metric(Prev_state_zero, t-1) + BM_zero, ...
                                                              Path_metric(Prev_state_one, t-1) + BM_one]);
                     Message_bit(j, t) = 0;
@@ -81,8 +81,8 @@ function decoded_output = Vit_gen_hard_dec(demodulated_output, trel, output_zero
 
                 % 입력 1을 받아서 현재 값이 되었을 경우    
                 else                                                          
-                    BM_zero = nnz(output_one(Prev_state_zero, :) - codeword(t-1, :));
-                    BM_one  = nnz(output_one(Prev_state_one,  :) - codeword(t-1, :));
+                    BM_zero = sum((output_one(Prev_state_zero, :) - codeword(t-1,:)).^2);  % 끝자리가 0인 코드에 1이 들어왔을 때 outputd으로 BM 계산
+                    BM_one  = sum((output_one(Prev_state_one, :) - codeword(t-1, :)).^2);  % 끝자리가 1인 코드에 1이 들어왔을 때
                     [Path_metric(j, t), I] = min([Path_metric(Prev_state_zero, t-1) + BM_zero, ...
                                                              Path_metric(Prev_state_one, t-1) + BM_one]);
                     Message_bit(j, t) = 1;
@@ -104,8 +104,8 @@ function decoded_output = Vit_gen_hard_dec(demodulated_output, trel, output_zero
                 % BM = min{ 끝자리 0에서 온 PM + BM, 끝자리 1에서 온 PM + BM}
                 % 입력 0을 받아서 현재 값이 되었을 경우
                 if Current_state < n_states / trel.numInputSymbols                         
-                    BM_zero = nnz(output_zero(Prev_state_zero, :) - codeword(t-1, :));
-                    BM_one  = nnz(output_zero(Prev_state_one,  :) - codeword(t-1, :));
+                    BM_zero = sum((output_zero(Prev_state_zero, :) - codeword(t-1,:)).^2);  % 끝자리가 0인 코드에 0이 들어왔을 때 outputd으로 BM 계산
+                    BM_one  = sum((output_zero(Prev_state_one, :) - codeword(t-1, :)).^2);  % 끝자리가 1인 코드에 0이 들어왔을 때
                     [Path_metric(j, t), I] = min([Path_metric(Prev_state_zero, t-1) + BM_zero, ...
                                                        Path_metric(Prev_state_one, t-1) + BM_one]);
                     Message_bit(j, t) = 0;
@@ -117,8 +117,8 @@ function decoded_output = Vit_gen_hard_dec(demodulated_output, trel, output_zero
 
                 % 입력 1을 받아서 현재 값이 되었을 경우
                 else                            
-                    BM_zero = nnz(output_one(Prev_state_zero, :) - codeword(t-1, :));
-                    BM_one  = nnz(output_one(Prev_state_one,  :) - codeword(t-1, :));
+                    BM_zero = sum((output_one(Prev_state_zero, :) - codeword(t-1,:)).^2);  % 끝자리가 0인 코드에 1이 들어왔을 때 outputd으로 BM 계산
+                    BM_one  = sum((output_one(Prev_state_one, :) - codeword(t-1, :)).^2);  % 끝자리가 1인 코드에 1이 들어왔을 때
                     [Path_metric(j, t), I] = min([Path_metric(Prev_state_zero, t-1) + BM_zero, ...
                                                         Path_metric(Prev_state_one, t-1) + BM_one]);
                     Message_bit(j, t) = 1;
@@ -134,16 +134,11 @@ function decoded_output = Vit_gen_hard_dec(demodulated_output, trel, output_zero
 %----------------------------------------------------------------------------------
 % back tracing
     current_state = 00 + 1;                                              % 맨 마지막 state = [0 0]
-    %fprintf('%d  ',current_state) 
     Survivor_path = Survivor_path(:, trel.numInputSymbols : end);
-    Message_bit = Message_bit(:, trel.numInputSymbols:end);
+    Message_bit = Message_bit(:, trel.numInputSymbols : end);
     for t = num_message_bit + tail_bit :-1 : 1
         decoded_output(1,t) = Message_bit(current_state, t);
         current_state = Survivor_path(current_state, t);
-        %fprintf('%d  ',current_state)
     end
-    %disp('\n')
-    %disp(fliplr(Path_metric));
-    %disp(fliplr(Survivor_path));
     decoded_output = decoded_output(1:num_message_bit);
 end
