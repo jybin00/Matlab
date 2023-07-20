@@ -17,6 +17,7 @@ function decoded_output = Vit_gen_hard_dec(demodulated_output, trel, output_zero
     Path_metric = inf(n_states, num_message_bit + tail_bit + 1);          
     Message_bit = inf(n_states, num_message_bit + tail_bit + 1);           % path message array
     Survivor_path = zeros(n_states, num_message_bit + tail_bit + 1); 
+    
     for t = 1 : num_message_bit + tail_bit + 1  
         % 맨 처음 state
         if t == 1

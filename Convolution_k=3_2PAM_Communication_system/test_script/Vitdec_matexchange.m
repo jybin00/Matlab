@@ -12,7 +12,7 @@ berEstSoft = zeros(size(EbNoVec));
 berEstHard = zeros(size(EbNoVec));
 
 % trellis = poly2trellis(7,[171 133]);
-trellis = trellis(3, [7 5]);
+trellis = trellis(3, [6 7]);
 tbl = 36;
 rate = 1/2;
 

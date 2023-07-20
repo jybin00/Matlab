@@ -9,14 +9,14 @@ SNR_dB = Eb_No_dB;
 BER_hard = zeros(1, length(Eb_No_dB));
 BER_soft = zeros(1, length(Eb_No_dB));
 FER_hard = zeros(1, length(Eb_No_dB));
-tb = 50;
+tb = 25;
 
 % input
 number_of_msg = 4e6;
 msg = randi([0 1], 1, number_of_msg);
 
 % convolution code
-trellis = poly2trellis(6,[65 57]);
+trellis = poly2trellis(3,[7 5]);
 coded_bit = convenc(msg, trellis);
 
 % mapping
