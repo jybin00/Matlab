@@ -6,7 +6,7 @@ clear
 
 %number of frame and bit
 n_info_bit = 25;
-n_frame = 1e1;
+n_frame = 1e4;
 
 %Eb/No db range
 Eb_No_dB = (0:9);
@@ -14,7 +14,7 @@ SNR_dB = Eb_No_dB;
 sigma = 10.^(-SNR_dB./10);
 
 %trellis
-trellis = poly2trellis(3, [6 7]);
+trellis = poly2trellis(3, [7 5]);
 
 %mode 1 == APP decoder
 %mode 2 == MAT exchange
@@ -22,7 +22,7 @@ test_mode = 2;
 
 %Decoder
 BCJR_Decoder = comm.APPDecoder(...
-    'TrellisStructure', poly2trellis(3, [6 7]), ...
+    'TrellisStructure', poly2trellis(3, [7 5]), ...
     'Algorithm', 'True APP', ...
     'CodedBitLLROutputPort', false);
 
@@ -31,7 +31,7 @@ FER = zeros(1, length(Eb_No_dB));
 BER = zeros(1, length(Eb_No_dB));
 
 for i = 1:length(Eb_No_dB)
-    disp(i)
+    fprintf("Eb/No = %d dB testing... \n", i-1);
     decoded_bit = zeros(1, length(n_info_bit));
     tmp_n_frame = n_frame;
     for j = 1:n_frame
@@ -52,7 +52,7 @@ for i = 1:length(Eb_No_dB)
                 zeros(length(info_bit), 1),  (2*received_bit*10^(SNR_dB(i)/10))');
     
         elseif test_mode == 2
-            decoded_bit = BCJR_matexchange(...
+            decoded_bit = BCJR_opt_ver1(...
                 received_bit, trellis, 10^(-SNR_dB(i)/10) );
         end
 
@@ -67,8 +67,9 @@ for i = 1:length(Eb_No_dB)
         end
 
     end
-    BER(i) = BER(i)/ (n_info_bit * tmp_n_frame);
-    FER(i) = FER(i)/ tmp_n_frame;
+    BER(i) = BER(i) / (n_info_bit * tmp_n_frame);
+    FER(i) = FER(i) / tmp_n_frame;
+    fprintf(" BER : %.3e \n FER : %.3e \n\n", BER(i), FER(i));
 end
 
 disp(BER)
@@ -113,7 +114,7 @@ p_hard = plot(Eb_No_dB, BER, ...
 
 
 lgd = legend([p_uncoded, p_hard],...
-    "Uncoded 2PAM", "BCJR BER m = 25");
+    "Uncoded 2PAM", "BCJR BER m = " + string(n_info_bit));
 lgd.FontSize = fontsize;
 lgd.Location = 'best';
 
@@ -155,7 +156,7 @@ p_hard = plot(Eb_No_dB, FER, ...
 
 
 lgd = legend([p_uncoded, p_hard],...
-    "Uncoded 2PAM FER", "BCJR FER m = 25");
+    "Uncoded 2PAM FER", "BCJR FER m = " + string(n_info_bit));
 lgd.FontSize = fontsize;
 lgd.Location = 'best';
 
