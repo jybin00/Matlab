@@ -6,7 +6,8 @@ clear
 
 %number of frame and bit
 n_info_bit = 25;
-n_frame = 1e4;
+n_frame = 4e3;
+info_bit = randsrc(n_frame, n_info_bit, [0 1]);
 
 %Eb/No db range
 Eb_No_dB = (0:9);
@@ -35,12 +36,8 @@ for i = 1:length(Eb_No_dB)
     decoded_bit = zeros(1, length(n_info_bit));
     tmp_n_frame = n_frame;
     for j = 1:n_frame
-
-        % information bit generation
-        info_bit = randi([0 1], 1, n_info_bit);
-
-        %message bit generation
-        messages = convenc(info_bit, trellis);
+        
+        messages = convenc(info_bit(j,:), trellis);
 
         % BPSK modulation
         modulated_bit = 2*messages-1;
@@ -58,8 +55,8 @@ for i = 1:length(Eb_No_dB)
 
         decoded_bit = decoded_bit > 0;
         decoded_bit = 1*reshape(decoded_bit, 1, length(decoded_bit));
-        BER(i) = BER(i) + nnz(decoded_bit - info_bit);
-        frame_error = double(nnz(decoded_bit ~= info_bit) > 0);
+        BER(i) = BER(i) + nnz(decoded_bit - info_bit(j,:));
+        frame_error = double(nnz(decoded_bit ~= info_bit(j,:)) > 0);
         FER(i) = FER(i) + frame_error;
         if BER(i) > 4000
             tmp_n_frame = j;
