@@ -6,7 +6,7 @@ clear
 
 %number of frame and bit
 n_info_bit = 25;
-n_frame = 1e5;
+n_frame = 1e1;
 
 %Eb/No db range
 Eb_No_dB = (0:9);
@@ -18,7 +18,7 @@ trellis = poly2trellis(3, [6 7]);
 
 %mode 1 == APP decoder
 %mode 2 == MAT exchange
-test_mode = 1;
+test_mode = 2;
 
 %Decoder
 BCJR_Decoder = comm.APPDecoder(...
@@ -52,13 +52,15 @@ for i = 1:length(Eb_No_dB)
                 zeros(length(info_bit), 1),  (2*received_bit*10^(SNR_dB(i)/10))');
     
         elseif test_mode == 2
-            decoded_bit = BCJR_matexchange_mex(...
+            decoded_bit = BCJR_matexchange(...
                 received_bit, trellis, 10^(-SNR_dB(i)/10) );
         end
 
         decoded_bit = decoded_bit > 0;
         decoded_bit = 1*reshape(decoded_bit, 1, length(decoded_bit));
         BER(i) = BER(i) + nnz(decoded_bit - info_bit);
+        frame_error = double(nnz(decoded_bit ~= info_bit) > 0);
+        FER(i) = FER(i) + frame_error;
         if BER(i) > 4000
             tmp_n_frame = j;
             break
@@ -66,12 +68,13 @@ for i = 1:length(Eb_No_dB)
 
     end
     BER(i) = BER(i)/ (n_info_bit * tmp_n_frame);
+    FER(i) = FER(i)/ tmp_n_frame;
 end
 
 disp(BER)
 
 toc
-%%
+%% BER plot
 close
 figure(1)
 hold on
@@ -110,7 +113,49 @@ p_hard = plot(Eb_No_dB, BER, ...
 
 
 lgd = legend([p_uncoded, p_hard],...
-    "Uncoded 2PAM", "hard BCJR");
+    "Uncoded 2PAM", "BCJR BER m = 25");
+lgd.FontSize = fontsize;
+lgd.Location = 'best';
+
+%% FER plot
+figure(2)
+hold on
+grid on
+
+axis([0 12 10^-4 1])
+xticks(0:2:12)
+
+linewidth = 1.5;
+fontsize = 14;
+markersize = 10;
+
+set(gca, "FontName", "Helvatica", "FontSize", fontsize)
+set(gca, "yscale", "log");
+
+xlabel("Eb/No", ...
+    "FontWeight", 'bold');
+ylabel("FER", ...
+    "FontWeight", 'bold');
+
+Eb_of_No_db = -1:0.1:12;
+
+% theorical uncoded FER
+p_uncoded = plot(Eb_of_No_db, 1-(1-qfunc(sqrt(2*10.^(Eb_of_No_db/10) )) ).^n_info_bit , ...
+    'color', '#ff0000', ...
+    'linewidth', 1, ...
+    'linestyle', '--' );
+
+% sim FER
+p_hard = plot(Eb_No_dB, FER, ...
+    'color', '#000000', ...
+    'linewidth', 1, ...
+    'linestyle', '-', ...
+    'marker', 'x', ...
+    'markersize', markersize);
+
+
+lgd = legend([p_uncoded, p_hard],...
+    "Uncoded 2PAM FER", "BCJR FER m = 25");
 lgd.FontSize = fontsize;
 lgd.Location = 'best';
 

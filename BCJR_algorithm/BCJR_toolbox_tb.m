@@ -6,8 +6,8 @@ close
 clear
 
 %number of frame
-n_info_bit = 50;
-n_frame = 4e4;
+n_info_bit = 25;
+n_frame = 4e5;
 
 %Eb/No db range
 Eb_No_dB = (0:10);
@@ -90,14 +90,14 @@ p_hard = plot(Eb_No_dB, BER, ...
 
 
 lgd = legend([p_uncoded, p_hard],...
-    "Uncoded 2PAM BER", "hard BCJR BER");
+    "Uncoded 2PAM BER", "APP decoder BER m = 25");
 
 %% FER plot
 figure(2)
 hold on
 grid on
 
-axis([0 12 10^-5 1])
+axis([0 12 10^-4 1])
 xticks(0:2:12)
 
 linewidth = 1.5;
@@ -130,7 +130,7 @@ p_hard = plot(Eb_No_dB, FER, ...
 
 
 lgd = legend([p_uncoded, p_hard],...
-    "Uncoded 2PAM FER", "hard BCJR FER");
+    "Uncoded 2PAM FER", "APP decoder FER m = 25");
 lgd.FontSize = fontsize;
 lgd.Location = 'best';
 
