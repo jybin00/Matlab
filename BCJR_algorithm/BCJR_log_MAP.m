@@ -1,4 +1,4 @@
-%********************************************************************************%
+%********************************************************************************************************************%
 %                                     BCJR_conv Decoder
 % 
 % This algorithm is reserved to the implementation of the Bahl, Cocke, Jelinek and Raviv (BCJR)
@@ -10,7 +10,7 @@
 %         					
 %                                              K. Elkhalil, SUP'COM Tunisia
 %                				             
-% *******************************************************************************%
+% *******************************************************************************************************************%
 
 function LLR = BCJR_log_MAP(y, trellis, sigma)
 
@@ -27,7 +27,7 @@ function LLR = BCJR_log_MAP(y, trellis, sigma)
     nextStates = trellis.nextStates;
     
     %********* Computing gamma for all states at each time ***************
-    gamma = zeros(N*R, n_state, n_state); % we suppose that the first state is the 0 state which can be handled at the encoders.
+    Gamma = zeros(N*R, n_state, n_state); % we suppose that the first state is the 0 state which can be handled at the encoders.
     for stage = 1 : N*R
         for prev_s = 1 : n_state
             current_s = nextStates(prev_s,:);
@@ -48,34 +48,34 @@ function LLR = BCJR_log_MAP(y, trellis, sigma)
                 end
                 % using product sum instead of square.
                 curr_s = in + 1;
-                gamma(stage, prev_s, curr_s) = exp( 4*sum(x .* y(n*(stage-1)+1 : n*stage) ) / (2*sigma^2) );
+                Gamma(stage, prev_s, curr_s) = ( 4*sum(x .* y(n*(stage-1)+1 : n*stage) ) / (2*sigma^2) );
                 input = input + 1;
             end
         end
     end
     
     %************** alpha recursions********************
-    alpha = zeros(N*R+1, n_state);
-    alpha(1,1) = 1;
+    Alpha = -inf(N*R+1, n_state);
+    Alpha(1,1) = 0;
     for stage = 2 : N*R+1
         for prev_s = 1 : n_state
             for curr_s = 1 : n_state
-                alpha(stage, curr_s) = alpha(stage, curr_s) + gamma(stage-1, prev_s, curr_s) * alpha(stage-1, prev_s) ;
+                Alpha(stage, curr_s) = max(Alpha(stage, curr_s), max(Gamma(stage-1, prev_s, curr_s), Alpha(stage-1, prev_s)) ) ;
             end
         end
-        alpha(stage,:) =  alpha(stage,:) / sum(alpha(stage,:)); % Normalization
+        Alpha(stage,:) =  Alpha(stage,:) / sum(Alpha(stage,:)); % Normalization
     end
     
     %************** beta recursions********************
-    beta = zeros(N*R+1, n_state);
-    beta(N*R+1,:) = alpha(N*R+1,:);
+    Beta = -inf(N*R+1, n_state);
+    Beta(N*R+1,:) = Alpha(N*R+1,:);
     for stage = N*R+1:-1:2
         for prev_s = 1 : n_state
             for curr_s = 1 : n_state
-                beta(stage-1, prev_s) = beta(stage-1, prev_s) + gamma(stage-1, prev_s, curr_s) * beta(stage, curr_s) ;
+                Beta(stage-1, prev_s) = max(Beta(stage-1, prev_s) , Gamma(stage-1, prev_s, curr_s) + Beta(stage, curr_s)) ;
             end
         end
-        beta(stage-1, :) = beta(stage-1, :) / sum(beta(stage-1,:)) ; % Normalization
+        Beta(stage-1, :) = Beta(stage-1, :) / sum(Beta(stage-1,:)) ; % Normalization
     end
     
     %%%%%%%%%%%%%%%%%%% Computing the LLRs %%%%%%%%%%%%%%%
@@ -88,9 +88,9 @@ function LLR = BCJR_log_MAP(y, trellis, sigma)
             for i = current_s
                 curr_s = i + 1;
                 if (in == 2) % input = 1
-                   up = up + alpha(stage, prev_s) * gamma(stage, prev_s, curr_s) * beta(stage+1, curr_s);
+                   up = max(up, Alpha(stage, prev_s) + Gamma(stage, prev_s, curr_s) + Beta(stage+1, curr_s));
                 elseif (in == 1) % input = 0
-                   down = down + alpha(stage, prev_s) * gamma(stage, prev_s, curr_s) * beta(stage+1, curr_s);
+                   down = max(down, Alpha(stage, prev_s) + Gamma(stage, prev_s, curr_s) + Beta(stage+1, curr_s));
                 end
                 in = in + 1;
             end
