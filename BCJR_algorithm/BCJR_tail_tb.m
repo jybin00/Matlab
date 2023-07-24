@@ -6,7 +6,7 @@ clear
 
 %number of frame and bit
 n_info_bit = 25;
-n_frame = 4e3;
+n_frame = 5e4;
 info_bit = randsrc(n_frame, n_info_bit, [0 1]);
 
 %Eb/No db range
@@ -17,6 +17,7 @@ sigma = 10.^(-SNR_dB./10);
 %trellis
 trellis = poly2trellis(3, [7 5]);
 tail_bit = repelem(0, log2(trellis.numStates));
+n_mem = log2(trellis.numStates);
 
 %mode 1 == APP decoder
 %mode 2 == MAT exchange
@@ -24,9 +25,10 @@ test_mode = 2;
 
 %Decoder
 BCJR_Decoder = comm.APPDecoder(...
-    'TrellisStructure', poly2trellis(3, [7 5]), ...
+    'TrellisStructure', trellis, ...
     'Algorithm', 'True APP', ...
-    'CodedBitLLROutputPort', false);
+    'CodedBitLLROutputPort', false, ...
+    'TerminationMethod','Terminated');
 
 %BER, FER variable
 FER = zeros(1, length(Eb_No_dB));
@@ -47,7 +49,7 @@ for i = 1:length(Eb_No_dB)
     
         if test_mode == 1
             decoded_bit = BCJR_Decoder(...
-                zeros(length(info_bit), 1),  (2*received_bit*10^(SNR_dB(i)/10))');
+                zeros(n_info_bit + n_mem, 1),  (2*received_bit*10^(SNR_dB(i)/10))');
     
         elseif test_mode == 2
             decoded_bit = BCJR_tail_bit(...
@@ -56,6 +58,7 @@ for i = 1:length(Eb_No_dB)
 
         decoded_bit = decoded_bit > 0;
         decoded_bit = 1*reshape(decoded_bit, 1, length(decoded_bit));
+        decoded_bit = decoded_bit(1:n_info_bit);
         BER(i) = BER(i) + nnz(decoded_bit - info_bit(j,:));
         frame_error = double(nnz(decoded_bit ~= info_bit(j,:)) > 0);
         FER(i) = FER(i) + frame_error;
