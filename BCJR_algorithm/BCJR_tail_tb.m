@@ -1,3 +1,5 @@
+ 
+
 % BCJR test bench
 tic
 clc
@@ -5,28 +7,31 @@ close
 clear
 
 %number of frame and bit
-n_info_bit = 25;
-n_frame = 5e4;
+n_info_bit = 20;
+n_frame = 4e5;
 info_bit = randsrc(n_frame, n_info_bit, [0 1]);
 
 %Eb/No db range
-Eb_No_dB = (0:9);
+Eb_No_dB = (0:8);
 SNR_dB = Eb_No_dB;
 sigma = 10.^(-SNR_dB./10);
 
 %trellis
-trellis = poly2trellis(3, [7 5]);
+%trellis = poly2trellis(5, [23 35 17]);
+trellis = poly2trellis([4 4],[15 13 17; 17 15 13]);
+
 tail_bit = repelem(0, log2(trellis.numStates));
 n_mem = log2(trellis.numStates);
 
 %mode 1 == APP decoder
 %mode 2 == MAT exchange
 test_mode = 2;
+decoding_mode = "BCJR";
 
 %Decoder
 BCJR_Decoder = comm.APPDecoder(...
     'TrellisStructure', trellis, ...
-    'Algorithm', 'True APP', ...
+    'Algorithm', 'Max', ...
     'CodedBitLLROutputPort', false, ...
     'TerminationMethod','Terminated');
 
@@ -52,7 +57,7 @@ for i = 1:length(Eb_No_dB)
                 zeros(n_info_bit + n_mem, 1),  (2*received_bit*10^(SNR_dB(i)/10))');
     
         elseif test_mode == 2
-            decoded_bit = BCJR_tail_bit(...
+            decoded_bit = BCJR_tail_bit_r=1\2(...
                 received_bit, trellis, 10^(-SNR_dB(i)/10) );
         end
 
@@ -114,10 +119,13 @@ p_hard = plot(Eb_No_dB, BER, ...
     'markersize', markersize);
 
 
+
 lgd = legend([p_uncoded, p_hard],...
-    "Uncoded 2PAM", "BCJR BER m = " + string(n_info_bit));
+    "Uncoded 2PAM", string(decoding_mode) + " BER m = " + string(n_info_bit));
 lgd.FontSize = fontsize;
 lgd.Location = 'best';
+
+
 
 %% FER plot
 figure(2)
@@ -155,10 +163,11 @@ p_hard = plot(Eb_No_dB, FER, ...
     'marker', 'x', ...
     'markersize', markersize);
 
-
 lgd = legend([p_uncoded, p_hard],...
-    "Uncoded 2PAM FER", "BCJR FER m = " + string(n_info_bit));
+    "Uncoded 2PAM FER", string(decoding_mode) + " FER m = " + string(n_info_bit));
 lgd.FontSize = fontsize;
 lgd.Location = 'best';
 
+% 외장 모니터 기준
+movegui(gca, [1305 530])
 
