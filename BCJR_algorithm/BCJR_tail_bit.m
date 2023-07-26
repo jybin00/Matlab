@@ -24,6 +24,7 @@ function LLR = BCJR_tail_bit(y, trellis, sigma)
     
     %*************************** Computing gamma for all states at each time *****************************
     gamma = zeros(N*R, n_state, n_state); % we suppose that the first state is the 0 state which can be handled at the encoders.
+    coder.varsize('previous_s');
     previous_s = 1;
     for stage = 1 : n_mem
         nextstates = nextStates(previous_s, :);
@@ -38,7 +39,7 @@ function LLR = BCJR_tail_bit(y, trellis, sigma)
             end 
             index = index + 1;
         end
-        previous_s = reshape((nextstates + 1), 1, []);
+        previous_s = reshape((nextstates + 1), 1, 2^stage);
     end
 
     for stage = n_mem + 1 : (N*R - n_mem)
@@ -56,6 +57,7 @@ function LLR = BCJR_tail_bit(y, trellis, sigma)
     end
 
     previous_s = (1:2^n_mem);
+    index_k = 0;
     for stage = (N*R - n_mem) + 1 : N*R
         for prev_s = previous_s
             for curr_s = nextStates(prev_s, 0 + 1) + 1
@@ -65,7 +67,8 @@ function LLR = BCJR_tail_bit(y, trellis, sigma)
                 gamma(stage, prev_s, curr_s) = exp( 4*sum(x .* y(n*(stage-1)+1 : n*stage) ) / (N0) );
             end 
         end
-        previous_s = unique(nextStates(previous_s, 0 + 1))' + 1;
+        index_k = index_k + 1;
+        previous_s = (1:2^(n_mem-index_k));
     end
     
     %************************************** alpha recursions********************************************
@@ -74,7 +77,8 @@ function LLR = BCJR_tail_bit(y, trellis, sigma)
 
     for stage = 2 : N*R+1 % - n_mem
         for prev_s = 1 : n_state
-            for curr_s = 1 : n_state
+            current_s = nextStates(prev_s,:);
+            for curr_s = current_s + 1
                 alpha(stage, curr_s) = alpha(stage, curr_s) + gamma(stage-1, prev_s, curr_s) * alpha(stage-1, prev_s) ;
             end
         end
@@ -132,7 +136,8 @@ function LLR = BCJR_tail_bit(y, trellis, sigma)
     
     for stage = N/n +1 :-1 : 2
         for prev_s = 1 : n_state
-            for curr_s = 1 : n_state
+            current_s = nextStates(prev_s,:);
+            for curr_s = current_s + 1
                 beta(stage-1, prev_s) = beta(stage-1, prev_s) + gamma(stage-1, prev_s, curr_s) * beta(stage, curr_s) ;
             end
         end
