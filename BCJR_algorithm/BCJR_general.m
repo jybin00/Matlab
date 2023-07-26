@@ -21,7 +21,7 @@ function decoder = BCJR_general(trellis, sigma, varargin)
     p = inputParser;
 
     default_type = 'True BCJR';
-    valid_type = {'True BCJR', 'log-max-MAP', 'log-MAP', 'APP_BCJR', 'APP_max_log', 'APP_log'};
+    valid_type = {'True BCJR', 'log-max-MAP', 'log-MAP', 'APP BCJR', 'APP max-log', 'APP log'};
     check_type = @(x) any(validatestring(x, valid_type));
 
     addRequired(p, 'trellis', @istrellis);
@@ -32,23 +32,28 @@ function decoder = BCJR_general(trellis, sigma, varargin)
 
     if strcmp(p.Results.type, 'True BCJR')
         decoder = @BCJR_tail_bit;
+
     elseif strcmp(p.Results.type, 'log-max-MAP')
         decoder = @BCJR_max_log_MAP;
+
     elseif strcmp(p.Results.type, 'log-MAP')
         decoder = @BCJR_log_MAP;
-    elseif strcmp(p.Results.type, 'APP')
+
+    elseif strcmp(p.Results.type, 'APP BCJR')
         decoder = comm.APPDecoder(...
             'TrellisStructure', trellis, ...
             'Algorithm', 'Max', ...
             'CodedBitLLROutputPort', false, ...
             'TerminationMethod','Terminated');
-    elseif strcmp(p.Results.type, 'APP_max_log')
+
+    elseif strcmp(p.Results.type, 'APP max-log')
         decoder = comm.APPDecoder(...
             'TrellisStructure', trellis, ...
             'Algorithm', 'Max', ...
             'CodedBitLLROutputPort', false, ...
             'TerminationMethod','Terminated');
-    elseif strcmp(p.Results.type, 'APP_log')
+        
+    elseif strcmp(p.Results.type, 'APP log')
         decoder = comm.APPDecoder(...
             'TrellisStructure', trellis, ...
             'Algorithm', 'Max*', ...
@@ -57,7 +62,10 @@ function decoder = BCJR_general(trellis, sigma, varargin)
     end
 
     %%
-    function LLR = BCJR_tail_bit(y)
+    function LLR = BCJR_tail_bit(size, y)
+        
+        tmp_size = size;
+        y = y';
 
         N = length(y); % y is the channel output
 
@@ -226,7 +234,10 @@ function decoder = BCJR_general(trellis, sigma, varargin)
     end
     
     %%
-    function LLR = BCJR_max_log_MAP(y)
+    function LLR = BCJR_max_log_MAP(size, y)
+
+        tmp_size = size;
+        y = y';
     
         N = length(y); % y is the channel output
         LLR = zeros(1, N*R);

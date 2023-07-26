@@ -8,7 +8,7 @@ clear
 
 %number of frame and bit
 n_info_bit = 20;
-n_frame = 2e1;
+n_frame = 2e5;
 info_bit = randsrc(n_frame, n_info_bit, [0 1]);
 
 %Eb/No db range
@@ -16,20 +16,19 @@ Eb_No_dB = (0:5);
 SNR_dB = Eb_No_dB;
 sigma = 10.^(-SNR_dB./10);
 
-%trellis
-constraint_length = [4 4];
-generator_polynomial = [17 15 13; 17 15 13];
+%trellis infomation
+constraint_length = 4;
+generator_polynomial = [17 15 13];
 trellis = poly2trellis(constraint_length, generator_polynomial);
-% trellis = poly2trellis([4 4],[15 13 17; 17 15 13]);
 
 trellis_str = string(constraint_length) +' ' +'[' + strjoin(string(generator_polynomial)) + ']' ;
 
 tail_bit = repelem(0, log2(trellis.numStates));
 n_mem = log2(trellis.numStates);
 
-% 'True BCJR', 'log-max-MAP', 'log-MAP' 
-% 'APP_BCJR',  'APP_max_log', 'APP_log'
-decoding_mode = "log-max-MAP";
+% 'True BCJR', 'log-max-MAP', 'log-MAP'
+% 'APP BCJR',  'APP max-log', 'APP log'
+decoding_mode = "APP max-log";
 
 
 %BER, FER variable
@@ -52,7 +51,7 @@ for i = 1:length(Eb_No_dB)
         % AWGN channel 
         received_bit = awgn(modulated_bit, SNR_dB(i));
     
-        decoded_bit = BCJR_decoder(2*10^(SNR_dB(i)/10)*received_bit);
+        decoded_bit = BCJR_decoder(zeros(n_info_bit + n_mem, 1), 2*10^(SNR_dB(i)/10)*received_bit');
     
         decoded_bit = 1*reshape(decoded_bit > 0, 1, length(decoded_bit));
         decoded_bit = decoded_bit(1:n_info_bit);
@@ -116,10 +115,10 @@ lgd = legend([p_uncoded, p_hard],...
 lgd.FontSize = fontsize;
 lgd.Location = 'best';
 
-txt = text('Position', [8 10^-1], ...
-    'String', trellis_str, ...
-    'FontSize', 16, ...
-    'FontWeight', 'bold');
+trellis_info = annotation('textbox', ...
+    [.75 .90 .1 .1], ...
+    'String',trellis_str,'EdgeColor','red', ...
+    'FitBoxToText', 'on');
 
 
 %% FER plot
@@ -163,10 +162,10 @@ lgd = legend([p_uncoded, p_hard],...
 lgd.FontSize = fontsize;
 lgd.Location = 'best';
 
-txt = text('Position', [8 10^-1], ...
-    'String', trellis_str, ...
-    'FontSize', 16, ...
-    'FontWeight', 'bold');
+trellis_info = annotation('textbox', ...
+    [.75 .90 .1 .1], ...
+    'String',trellis_str,'EdgeColor','red', ...
+    'FitBoxToText', 'on');
 
 % 외장 모니터 기준
 movegui(gca, [1305 530])

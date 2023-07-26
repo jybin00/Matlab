@@ -19,7 +19,6 @@ sigma = 10.^(-SNR_dB./10);
 %trellis
 trellis = poly2trellis(4, [17 15 13]);
 % trellis = poly2trellis([4 4],[15 13 17; 17 15 13]);
-trellis_str{1} = (4, [17 15 13]);
 
 tail_bit = repelem(0, log2(trellis.numStates));
 n_mem = log2(trellis.numStates);
