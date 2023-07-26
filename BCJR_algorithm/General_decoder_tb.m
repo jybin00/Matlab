@@ -11,7 +11,7 @@ n_info_bit = 20;
 n_frame = 2e5;
 info_bit = randsrc(n_frame, n_info_bit, [0 1]);
 
-%Eb/No db range
+%Eb/No db range & sigma
 Eb_No_dB = (0:5);
 SNR_dB = Eb_No_dB;
 sigma = 10.^(-SNR_dB./10);
@@ -26,24 +26,29 @@ trellis_str = string(constraint_length) +' ' +'[' + strjoin(string(generator_pol
 tail_bit = repelem(0, log2(trellis.numStates));
 n_mem = log2(trellis.numStates);
 
+% decoding type
 % 'True BCJR', 'log-max-MAP', 'log-MAP'
 % 'APP BCJR',  'APP max-log', 'APP log'
 decoding_mode = "APP max-log";
-
 
 %BER, FER variable
 FER = zeros(1, length(Eb_No_dB));
 BER = zeros(1, length(Eb_No_dB));
 
 for i = 1:length(Eb_No_dB)
-
+    
+    % decoder 선언
     BCJR_decoder = BCJR_general(trellis, 10^(SNR_dB(i)/10), decoding_mode);
+
+    % simulation 정보
     fprintf("Eb/No = %d dB testing... \n", i-1);
+
     decoded_bit = zeros(1, length(n_info_bit));
     tmp_n_frame = n_frame;
 
     for j = 1:n_frame
         
+        % Convolution encoding
         messages = convenc([info_bit(j,:) tail_bit], trellis);
 
         % BPSK modulation
@@ -51,13 +56,19 @@ for i = 1:length(Eb_No_dB)
         % AWGN channel 
         received_bit = awgn(modulated_bit, SNR_dB(i));
     
+        % BCJR decoding
         decoded_bit = BCJR_decoder(zeros(n_info_bit + n_mem, 1), 2*10^(SNR_dB(i)/10)*received_bit');
     
         decoded_bit = 1*reshape(decoded_bit > 0, 1, length(decoded_bit));
+
+        % tail bit 자르기
         decoded_bit = decoded_bit(1:n_info_bit);
+
+        % BER 추가
         BER(i) = BER(i) + nnz(decoded_bit - info_bit(j,:));
         frame_error = double(nnz(decoded_bit ~= info_bit(j,:)) > 0);
         FER(i) = FER(i) + frame_error;
+
         if BER(i) > 4000
             tmp_n_frame = j;
             break
