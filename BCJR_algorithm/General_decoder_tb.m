@@ -8,17 +8,18 @@ clear
 
 %number of frame and bit
 n_info_bit = 20;
-n_frame = 2e5;
+n_frame = 2e1;
 info_bit = randsrc(n_frame, n_info_bit, [0 1]);
+rate = 1/2;
 
 %Eb/No db range & sigma
-Eb_No_dB = (0:5);
-SNR_dB = Eb_No_dB;
-sigma = 10.^(-SNR_dB./10);
+Eb_No_dB = (0:1);
+SNR_dB = Eb_No_dB + 10*log10(2*rate);
+sigma_sq = 10.^(-SNR_dB./10);
 
 %trellis infomation
-constraint_length = 4;
-generator_polynomial = [17 15 13];
+constraint_length = 3;
+generator_polynomial = [5 7];
 trellis = poly2trellis(constraint_length, generator_polynomial);
 
 trellis_str = string(constraint_length) +' ' +'[' + strjoin(string(generator_polynomial)) + ']' ;
@@ -29,7 +30,7 @@ n_mem = log2(trellis.numStates);
 % decoding type
 % 'True BCJR', 'log-max-MAP', 'log-MAP'
 % 'APP BCJR',  'APP max-log', 'APP log'
-decoding_mode = "APP max-log";
+decoding_mode = "True BCJR";
 
 %BER, FER variable
 FER = zeros(1, length(Eb_No_dB));
@@ -47,7 +48,7 @@ for i = 1:length(Eb_No_dB)
     tmp_n_frame = n_frame;
 
     for j = 1:n_frame
-        
+
         % Convolution encoding
         messages = convenc([info_bit(j,:) tail_bit], trellis);
 

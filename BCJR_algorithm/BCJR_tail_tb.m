@@ -8,17 +8,22 @@ clear
 
 %number of frame and bit
 n_info_bit = 20;
-n_frame = 2e5;
+n_frame = 2e1;
 info_bit = randsrc(n_frame, n_info_bit, [0 1]);
+constraint_length = 4;
 
 %Eb/No db range
-Eb_No_dB = (0:5);
-SNR_dB = Eb_No_dB;
+Eb_No_dB = (0:1);
+SNR_dB = Eb_No_dB + 10*log10(2*1/(constraint_length-1));
 sigma = 10.^(-SNR_dB./10);
 
+
 %trellis
-trellis = poly2trellis(4, [17 15 13]);
+generator_polynomial = [17 15 13];
+trellis = poly2trellis(constraint_length, generator_polynomial);
 % trellis = poly2trellis([4 4],[15 13 17; 17 15 13]);
+
+trellis_str = string(constraint_length) +' ' +'[' + strjoin(string(generator_polynomial)) + ']' ;
 
 tail_bit = repelem(0, log2(trellis.numStates));
 n_mem = log2(trellis.numStates);
@@ -26,7 +31,7 @@ n_mem = log2(trellis.numStates);
 %mode 1 == APP decoder
 %mode 2 == True BCJR
 %mode 3 == max-log-MAP algorithm
-test_mode = 3;
+test_mode = 2;
 decoding_mode = "APP decoder";
 
 %Decoder
