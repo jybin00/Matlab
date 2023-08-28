@@ -11,7 +11,7 @@ channel_output = awgn(encoded_output, 4, "measured");
 channel_output= channel_output>0;
 
 decoding_wrong = Wrong_Viterbi_decoding(channel_output, length(input));
-decoding_correct = Viterbi_decoding(channel_output, length(input));
+decoding_correct = F_Viterbi_decoding(channel_output, length(input));
 
 nnz(input - decoding_wrong)
 nnz(input - decoding_correct)

@@ -44,7 +44,7 @@ for i = 1: length(Eb_No_dB)
         demodulated_output = received_signal > 0;
 
         if mode == 1
-            decoding = Viterbi_decoding(demodulated_output, N_m_bit);
+            decoding = F_Viterbi_decoding(demodulated_output, N_m_bit);
         elseif mode == 2
             decoding = Vit_gen_hard_dec_mex(demodulated_output, trellis, output_zero, output_one);
         end

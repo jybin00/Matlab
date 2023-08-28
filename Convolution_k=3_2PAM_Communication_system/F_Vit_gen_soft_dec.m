@@ -1,7 +1,7 @@
 % Viterbi decoding
 % Convolution code는 trellis 정보에 따라 달라짐.
 % R = 1/2 code
-function decoded_output = Vit_gen_soft_dec(demodulated_output, trel, output_zero, output_one)  
+function decoded_output = F_Vit_gen_soft_dec(demodulated_output, trel, output_zero, output_one)  
     
     tail_bit = log2(trel.numStates);
     n_mem = log2(trel.numStates);

@@ -24,8 +24,8 @@ trellis = poly2trellis(3, [7, 5]);
 tail_bit = repelem(0, log2(trellis.numStates));
 test_bit = randsrc(N_frame, N_m_bit, [0 1]);     % test bit generation
 
-hard_decoder = Vitdec(trellis, N_m_bit, 'type', 'hard');
-soft_decoder = Vitdec(trellis, N_m_bit, 'type', 'soft');
+hard_decoder = F_Vitdec(trellis, N_m_bit, 'type', 'hard');
+soft_decoder = F_Vitdec(trellis, N_m_bit, 'type', 'soft');
 
 
 for n = 1 : length(Eb_No_dB)         % Eb를 바꿔가면서 계산

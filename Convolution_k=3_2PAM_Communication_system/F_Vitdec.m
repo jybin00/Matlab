@@ -2,7 +2,7 @@
 % Convolution code는 trellis 정보에 따라 달라짐.
 % R = 1/2 code
 
-function decoder = Vitdec(trel, num_message_bit, varargin)
+function decoder = F_Vitdec(trel, num_message_bit, varargin)
 
 tail_bit = log2(trel.numStates);
 n_mem = log2(trel.numStates);
