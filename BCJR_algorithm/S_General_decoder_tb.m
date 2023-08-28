@@ -2,13 +2,13 @@
 
 % BCJR test bench
 tic
-clc
-close
-clear
+% clc
+% close
+% clear
 
 %number of frame and bit
-n_info_bit = 20;
-n_frame = 2e5;
+n_info_bit = 25;
+n_frame = 3e6;
 info_bit = randsrc(n_frame, n_info_bit, [0 1]);
 
 
@@ -36,6 +36,8 @@ decoding_mode = "True BCJR";
 %BER, FER variable
 FER = zeros(1, length(Eb_No_dB));
 BER = zeros(1, length(Eb_No_dB));
+bit_error = zeros(1, length(Eb_No_dB));
+frame_error = zeros(1, length(Eb_No_dB));
 
 for i = 1:length(Eb_No_dB)
     
@@ -43,15 +45,15 @@ for i = 1:length(Eb_No_dB)
     BCJR_decoder = F_BCJR_general(trellis, 10^(SNR_dB(i)/10), decoding_mode);
 
     % simulation 정보
-    fprintf("Eb/No = %d dB testing... \n", i-1);
+    fprintf("Eb/No = %d dB testing... \n", Eb_No_dB(i));
 
     decoded_bit = zeros(1, length(n_info_bit));
     tmp_n_frame = n_frame;
 
-    for j = 1:n_frame
+    for blk = 1:n_frame
 
         % Convolution encoding
-        messages = convenc([info_bit(j,:) tail_bit], trellis);
+        messages = convenc([info_bit(blk,:) tail_bit], trellis);
 
         % BPSK modulation
         modulated_bit = 2*messages-1;
@@ -67,18 +69,27 @@ for i = 1:length(Eb_No_dB)
         decoded_bit = decoded_bit(1:n_info_bit);
 
         % BER 추가
-        BER(i) = BER(i) + nnz(decoded_bit - info_bit(j,:));
-        frame_error = double(nnz(decoded_bit ~= info_bit(j,:)) > 0);
-        FER(i) = FER(i) + frame_error;
+        bit_error(i) = bit_error(i) + nnz(decoded_bit - info_bit(blk,:));
+        f_error = double(nnz(decoded_bit ~= info_bit(blk,:)) > 0);
+        frame_error(i) = frame_error(i) + f_error;
 
-        if BER(i) > 4000
-            tmp_n_frame = j;
+        if mod(blk,1000) == 0
+            BER(i) = bit_error(i) / (n_info_bit * blk);
+            FER(i) = frame_error(i) / blk;
+            fprintf(" Eb/No = %.1f [dB]  block = %d/%.2e \n", Eb_No_dB(i), blk, n_frame)
+            fprintf(" error : %d\n", bit_error(i))
+            fprintf(" BER : %.3e FER : %.3e \n\n", BER(i), FER(i));
+        end
+
+        if bit_error(i) > 1000
+            BER(i) = bit_error(i) / (n_info_bit * blk);
+            FER(i) = frame_error(i) / blk;
+            fprintf(" Eb/No = %.1f [dB]  block : %.4e / %.2e \n", Eb_No_dB(i), blk, n_frame)
+            fprintf(" error : %d\n", bit_error(i))
+            fprintf(" BER: %.3e   FER: %.3e \n\n", BER(i), FER(i));
             break
         end
     end
-    BER(i) = BER(i) / (n_info_bit * tmp_n_frame);
-    FER(i) = FER(i) / tmp_n_frame;
-    fprintf(" BER : %.3e \n FER : %.3e \n\n", BER(i), FER(i));
 end
 
 disp("test is done.")
