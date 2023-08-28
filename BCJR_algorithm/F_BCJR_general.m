@@ -2,7 +2,7 @@
 % trellis 정보 받아서 preprocessing하고 decoder를 반환함.
 
 
-function decoder = BCJR_general(trellis, sigma, varargin)
+function decoder = F_BCJR_general(trellis, sigma, varargin)
 
     n_state = trellis.numStates;
     n_mem = log2(trellis.numStates);

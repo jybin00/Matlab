@@ -1,6 +1,6 @@
 
 
-function LLR = BCJR_max_log_MAP(y, trellis, sigma)
+function LLR = F_BCJR_max_log_MAP(y, trellis, sigma)
 
     N = length(y); % y is the channel output
     n = log2(trellis.numOutputSymbols); % n = 2

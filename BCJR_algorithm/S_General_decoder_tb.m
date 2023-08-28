@@ -8,19 +8,20 @@ clear
 
 %number of frame and bit
 n_info_bit = 20;
-n_frame = 2e1;
+n_frame = 2e5;
 info_bit = randsrc(n_frame, n_info_bit, [0 1]);
-rate = 1/2;
 
-%Eb/No db range & sigma
-Eb_No_dB = (0:1);
-SNR_dB = Eb_No_dB + 10*log10(2*rate);
-sigma_sq = 10.^(-SNR_dB./10);
 
 %trellis infomation
 constraint_length = 3;
 generator_polynomial = [5 7];
 trellis = poly2trellis(constraint_length, generator_polynomial);
+
+%Eb/No db range & sigma
+rate = 1/(constraint_length -1);
+Eb_No_dB = (0:7);
+SNR_dB = Eb_No_dB + 10*log10(2*rate);
+sigma_sq = 10.^(-SNR_dB./10);
 
 trellis_str = string(constraint_length) +' ' +'[' + strjoin(string(generator_polynomial)) + ']' ;
 
@@ -39,7 +40,7 @@ BER = zeros(1, length(Eb_No_dB));
 for i = 1:length(Eb_No_dB)
     
     % decoder 선언
-    BCJR_decoder = BCJR_general(trellis, 10^(SNR_dB(i)/10), decoding_mode);
+    BCJR_decoder = F_BCJR_general(trellis, 10^(SNR_dB(i)/10), decoding_mode);
 
     % simulation 정보
     fprintf("Eb/No = %d dB testing... \n", i-1);
@@ -55,7 +56,7 @@ for i = 1:length(Eb_No_dB)
         % BPSK modulation
         modulated_bit = 2*messages-1;
         % AWGN channel 
-        received_bit = awgn(modulated_bit, SNR_dB(i));
+        received_bit = modulated_bit + sqrt(sigma_sq(i)) * randn(1, length(modulated_bit));
     
         % BCJR decoding
         decoded_bit = BCJR_decoder(zeros(n_info_bit + n_mem, 1), 2*10^(SNR_dB(i)/10)*received_bit');

@@ -1,6 +1,6 @@
 % R = 1/2일 때 적용되는 code
 
-function decoded_bit = BCJR_decoder(input_bit, n_frame, constraintLength, SNR)
+function decoded_bit = F_BCJR_decoder(input_bit, n_frame, constraintLength, SNR)
 
     n_state = 2^(constraintLength-1);
     n_stage = n_state + 1;

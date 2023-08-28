@@ -10,18 +10,18 @@ clear
 n_info_bit = 20;
 n_frame = 2e1;
 info_bit = randsrc(n_frame, n_info_bit, [0 1]);
-constraint_length = 4;
-
-%Eb/No db range
-Eb_No_dB = (0:1);
-SNR_dB = Eb_No_dB + 10*log10(2*1/(constraint_length-1));
-sigma = 10.^(-SNR_dB./10);
-
 
 %trellis
 generator_polynomial = [17 15 13];
+constraint_length = 4;
 trellis = poly2trellis(constraint_length, generator_polynomial);
 % trellis = poly2trellis([4 4],[15 13 17; 17 15 13]);
+
+%Eb/No db range
+Eb_No_dB = (0:1);
+Rate = 1/(constraint_length-1);
+SNR_dB = Eb_No_dB + 10*log10(2*Rate);
+sigma = 10.^(-SNR_dB./10);
 
 trellis_str = string(constraint_length) +' ' +'[' + strjoin(string(generator_polynomial)) + ']' ;
 
@@ -63,11 +63,11 @@ for i = 1:length(Eb_No_dB)
                 zeros(n_info_bit + n_mem, 1),  (2*received_bit*10^(SNR_dB(i)/10))');
     
         elseif test_mode == 2
-            decoded_bit = BCJR_tail_bit(...
+            decoded_bit = F_BCJR_tail_bit(...
                 received_bit, trellis, 10^(-SNR_dB(i)/10) );
 
         elseif test_mode == 3
-            decoded_bit = BCJR_max_log_MAP(...
+            decoded_bit = F_BCJR_max_log_MAP(...
                 received_bit, trellis, 10^(-SNR_dB(i)/10) );
         end
 

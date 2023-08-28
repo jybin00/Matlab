@@ -1,6 +1,6 @@
 
 
-function LLR = BCJR_tail_bit(y, trellis, sigma)
+function LLR = F_BCJR_tail_bit(y, trellis, sigma)
 
     N = length(y); % y is the channel output
     n = log2(trellis.numOutputSymbols); % n = 2

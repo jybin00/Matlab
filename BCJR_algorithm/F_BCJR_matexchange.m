@@ -12,7 +12,7 @@
 %                				             
 % *******************************************************************************%
 
-function LLR = BCJR_matexchange(y, trellis, sigma)
+function LLR = F_BCJR_matexchange(y, trellis, sigma)
 
     N = length(y); % y is the channel output
     n = log2(trellis.numOutputSymbols); % n = 2
