@@ -11,6 +11,10 @@ Eb_No_dB = (0:7)';
 % trellis 정보를 이용해서 입력에 대한 output 구하기.
 constraint_length = 2;
 trellis = poly2trellis(constraint_length + 1, [5, 7]);
+
+output_zero = 2* int2bit(trellis.outputs(:,1)', trellis.numInputSymbols)' - 1;
+output_one  = 2 * int2bit(trellis.outputs(:,2)', trellis.numInputSymbols)' - 1;
+
 tail_bit = repelem(0, log2(trellis.numStates));
 test_bit = randsrc(N_frame, N_m_bit, [0 1]);     % test bit generation
 
@@ -31,7 +35,7 @@ frame_error_soft = zeros(1, length(Eb_No_dB));
 N_f_sim(1,1:length(Eb_No_dB)) = N_frame;
 
 % hard_decoder = F_Vitdec(trellis, N_m_bit, 'type', 'hard');
-% soft_decoder = F_Vitdec(trellis, N_m_bit, 'type', 'soft');
+soft_decoder = F_Vitdec(trellis, N_m_bit, 'type', 'soft');
 
 
 for n = 1 : length(Eb_No_dB)         % Eb를 바꿔가면서 계산
@@ -52,7 +56,8 @@ for n = 1 : length(Eb_No_dB)         % Eb를 바꿔가면서 계산
         % demodulation
         demodulated_output = received_signal > 0;
         
-        decoding_soft = F_Vit_gen_soft_dec(received_signal);
+        %decoding_soft = soft_decoder(received_signal);
+        decoding_soft = F_Vit_gen_soft_dec(received_signal, trellis, output_zero, output_one);
         % decoding_hard = hard_decoder(demodulated_output);
 
         error_s = sum(mod(input+decoding_soft,2));
