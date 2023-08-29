@@ -1,16 +1,16 @@
 % Viterbi decoding
 % Convolution code는 trellis 정보에 따라 달라짐.
 % R = 1/2 code
-function decoded_output = F_Vit_gen_soft_dec(demodulated_output, trel, output_zero, output_one)  
+function decoded_output = F_Vit_gen_soft_dec(received_signal, trel, output_zero, output_one)  
     
     tail_bit = log2(trel.numStates);
     n_mem = log2(trel.numStates);
     n_states = trel.numStates;
-    num_message_bit = length(demodulated_output)/trel.numInputSymbols - tail_bit;
+    num_message_bit = length(received_signal)/trel.numInputSymbols - tail_bit;
     decoded_output = zeros(1, num_message_bit + tail_bit);  % demodulated_bit + (tail bits)
 %---------------------------------------------------------------------------------
     % input을 2개씩 끊어서 codeword 구성 (R = 1/2 이므로)
-    codeword = reshape(demodulated_output, [trel.numInputSymbols, num_message_bit + tail_bit]);     
+    codeword = reshape(received_signal, [trel.numInputSymbols, num_message_bit + tail_bit]);     
     codeword = codeword';
 %--------------------------------------------------------------------------------------
     % # of states X (num_message_bit + tail bit + 1) Path metric 저장 위한 matrix
