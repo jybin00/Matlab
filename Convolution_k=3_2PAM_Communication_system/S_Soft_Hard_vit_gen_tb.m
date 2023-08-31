@@ -2,21 +2,21 @@
 clc
 clear
 tic
-N_m_bit = 25;                                    % Number of message bit
-N_frame = 5e6;                                   % Number of frame
+N_m_bit = 1000;                   % Number of message bit
+N_frame = 5e6;                   % Number of frame
 
 
 Eb_No_dB = (0:7)';
 
 % trellis 정보를 이용해서 입력에 대한 output 구하기.
-constraint_length = 2;
-trellis = poly2trellis(constraint_length + 1, [5, 7]);
+constraint_length = 3;
+trellis = poly2trellis(constraint_length + 1, [13, 15, 17]);
 
-output_zero = 2* int2bit(trellis.outputs(:,1)', trellis.numInputSymbols)' - 1;
-output_one  = 2 * int2bit(trellis.outputs(:,2)', trellis.numInputSymbols)' - 1;
+output_zero = 2 * int2bit(trellis.outputs(:,1)', log2(trellis.numOutputSymbols))' - 1;
+output_one  = 2 * int2bit(trellis.outputs(:,2)', log2(trellis.numOutputSymbols))' - 1;
 
 tail_bit = repelem(0, log2(trellis.numStates));
-test_bit = randsrc(N_frame, N_m_bit, [0 1]);     % test bit generation
+% test_bit = randsrc(N_frame, N_m_bit, [0 1]);     % test bit generation
 
 rate = 1/constraint_length;
 snr_dB = Eb_No_dB + 10*log10(2*rate);
@@ -44,7 +44,8 @@ for n = 1 : length(Eb_No_dB)         % Eb를 바꿔가면서 계산
 
         % 1~ message bit || 1+ message bit ~ 2* message bit ....
         % encoded input = (message_bit + tail bit) * 2
-        input = test_bit(blk, :);
+        % input = test_bit(blk, :);
+        input = randsrc(1, N_m_bit, [0 1]); 
         encoded_input = convenc([input, tail_bit], trellis);  
 
         % modulation -> channel -> demodulation
@@ -57,7 +58,7 @@ for n = 1 : length(Eb_No_dB)         % Eb를 바꿔가면서 계산
         demodulated_output = received_signal > 0;
         
         %decoding_soft = soft_decoder(received_signal);
-        decoding_soft = F_Vit_gen_soft_dec(received_signal, trellis, output_zero, output_one);
+        decoding_soft = F_Vit_gen_soft_dec_mex(received_signal, trellis, output_zero, output_one, 1/3);
         % decoding_hard = hard_decoder(demodulated_output);
 
         error_s = sum(mod(input+decoding_soft,2));
@@ -71,7 +72,7 @@ for n = 1 : length(Eb_No_dB)         % Eb를 바꿔가면서 계산
         %     error_hard(1, n) = error_hard(1, n) + error_h;
         % end
         
-        if mod(blk, 10000) == 0
+        if mod(blk, 3000) == 0
             BER_soft(1, n) = bit_error_soft(1, n) / (blk * N_m_bit);
             % BER_hard(1, n) = error_hard(1, n) / (blk * N_m_bit);
         
@@ -84,7 +85,7 @@ for n = 1 : length(Eb_No_dB)         % Eb를 바꿔가면서 계산
         end
 
 
-        if bit_error_soft(1, n) > 1000
+        if bit_error_soft(1, n) > 10000
             BER_soft(1, n) = bit_error_soft(1, n) / (blk * N_m_bit);
             % BER_hard(1, n) = error_hard(1, n) / (blk * N_m_bit);
         
@@ -108,7 +109,7 @@ figure(1)
 hold on
 grid on
 
-axis([0 12 10^-5 1])
+axis([0 12 10^-6 1])
 xticks(0:2:12)
 
 linewidth = 1.5;
@@ -128,29 +129,29 @@ Eb_of_No_db = -1:0.1:12;
 % theorical uncoded BER
 p_uncoded = plot(Eb_of_No_db, qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) ), ...
     'color', '#ff0000', ...
-    'linewidth', 1, ...
+    'linewidth', linewidth, ...
     'linestyle', '--' );
 
 % sim BER
 % p_hard = plot(Eb_No_dB, BER_hard, ...
 %     'color', '#000000', ...
-%     'linewidth', 1, ...
+%     'linewidth', linewidth, ...
 %     'linestyle', '-', ...
 %     'marker', 'x', ...
 %     'markersize', markersize);
-
+% 
 p_soft = plot(Eb_No_dB, BER_soft, ...
     'color', '#0000ff', ...
-    'linewidth', 1, ...
+    'linewidth', linewidth, ...
     'linestyle', '-', ...
     'marker', 'o', ...
     'markersize', markersize);
 
 %legend('Uncoded 2PAM BER', 'Hard wrong Viterbi v = 2, m = 50', 'Hard correct Viterbi v = 2, m = 50')
 lgd = legend([p_uncoded, p_soft], ...
-    {'Uncoded 2PAM BER', 'Soft Viterbi, m = 25'});
+    {'Uncoded BPSK BER', 'Soft Viterbi , m = '+string(N_m_bit)});
 % lgd = legend([p_uncoded, p_hard, p_soft], ...
-%     {'Uncoded 2PAM BER', 'Hard Viterbi v = 2, m = 25', 'Soft Viterbi v = 2, m = 25'});
+%     {'Uncoded BPSK BER', 'Hard Viterbi v = 2, m = 100', 'Soft Viterbi v = 2, m = 100'});
 lgd.FontSize = fontsize;
 lgd.Location = 'best';
 
@@ -162,7 +163,7 @@ grid on
 axis([0 12 10^-4 1])
 xticks([0:2:12])
 
-linewidth = 1;
+linewidth = 1.5;
 fontsize = 13;
 markersize = 9;
 
@@ -179,20 +180,20 @@ Eb_of_No_db = -1:0.1:12;
 % theorical FER
 p_theory = plot(Eb_of_No_db, 1- (1-qfunc(sqrt(2*10.^(Eb_of_No_db/10) ) )).^(N_m_bit), ...
     'color', '#ff0000', ...
-    'linewidth', 1, ...
+    'linewidth', linewidth, ...
     'linestyle', '--' );
 
 % sim FER
 % p_hard = plot(Eb_No_dB, FER_hard, ...
 %     'color', '#000000', ...
-%     'linewidth', 1, ...
+%     'linewidth', linewidth, ...
 %     'linestyle', '-', ...
 %     'marker', 'x', ...
 %     'markersize', markersize);
 
 p_soft = plot(Eb_No_dB, FER_soft, ...
     'color', '#0000ff', ...
-    'linewidth', 1, ...
+    'linewidth', linewidth, ...
     'linestyle', '-', ...
     'marker', 'o', ...
     'markersize', markersize);
@@ -201,7 +202,7 @@ p_soft = plot(Eb_No_dB, FER_soft, ...
 % lgd = legend([p_theory, p_hard, p_soft], ...
 %     {'Uncoded 2PAM FER', 'Hard Viterbi v = 2, m = 50', 'Soft Viterbi v = 2, m = 50'});
 lgd = legend([p_theory, p_soft], ...
-    {'Uncoded 2PAM FER', 'Soft Viterbi, m = 25'});
+    {'Uncoded BPSK FER', 'Soft Viterbi, m = '+string(N_m_bit)});
 lgd.FontSize = fontsize;
 lgd.Location = 'best';
 
